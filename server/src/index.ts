@@ -4,7 +4,6 @@ import express from 'express';
 import { DataSource } from 'typeorm';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
-import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
 import User from './entities/User';
 import Post from './entities/Post';
 import HelloResolver from './resolvers/Hello';
@@ -31,7 +30,6 @@ const main = async () => {
       resolvers: [HelloResolver],
       validate: false,
     }),
-    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
   await apolloServer.start();
@@ -43,7 +41,7 @@ const main = async () => {
 
   const PORT = 4000;
   app.listen(PORT, () => {
-    console.log(`server start at http://localhost:${PORT}`);
+    console.log(`server start at http://localhost:${PORT}${apolloServer.graphqlPath}`);
   });
 };
 
