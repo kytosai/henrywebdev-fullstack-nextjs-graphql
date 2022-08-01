@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import express from 'express';
 import { DataSource } from 'typeorm';
 import { ApolloServer } from 'apollo-server-express';
+import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
 import { buildSchema } from 'type-graphql';
 import User from './entities/User';
 import Post from './entities/Post';
@@ -30,6 +31,11 @@ const main = async () => {
       resolvers: [HelloResolver],
       validate: false,
     }),
+
+    /*
+      Add local graphql landing page
+    */
+    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
   await apolloServer.start();
