@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import 'reflect-metadata';
 import express from 'express';
 import { DataSource } from 'typeorm';
+import User from './entities/User';
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ const main = async () => {
     password: process.env.DB_PASSWORD_DEV,
     logging: true,
     synchronize: true, // ! only use for development
+    entities: [User],
   });
 
   await myDataSource.initialize();
