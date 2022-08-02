@@ -4,7 +4,7 @@ import argon2 from 'argon2';
 
 @Resolver()
 class UserResolver {
-  @Mutation((_returns) => User, { nullable: true })
+  @Mutation(() => User, { nullable: true })
   async register(
     @Arg('email') email: string,
     @Arg('username') username: string,
