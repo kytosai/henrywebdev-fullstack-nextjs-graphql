@@ -8,6 +8,7 @@ import { buildSchema } from 'type-graphql';
 import User from './entities/User';
 import Post from './entities/Post';
 import HelloResolver from './resolvers/Hello';
+import UserResolver from './resolvers/User';
 
 dotenv.config();
 
@@ -28,7 +29,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver],
+      resolvers: [HelloResolver, UserResolver],
       validate: false,
     }),
 
