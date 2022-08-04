@@ -1,9 +1,9 @@
 import User from '../entities/User';
-import { Field, InterfaceType } from 'type-graphql';
+import { Field, InterfaceType, ObjectType } from 'type-graphql';
 import MutationResponse from './MutationReponse';
 import FieldError from './FieldError';
 
-@InterfaceType({ implements: MutationResponse })
+@ObjectType({ implements: MutationResponse })
 class UserMutationResponse implements MutationResponse {
   code: number;
   success: boolean;
