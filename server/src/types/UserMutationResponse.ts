@@ -4,11 +4,7 @@ import MutationResponse from './MutationReponse';
 import FieldError from './FieldError';
 
 @ObjectType({ implements: MutationResponse })
-class UserMutationResponse implements MutationResponse {
-  code: number;
-  success: boolean;
-  message?: string;
-
+class UserMutationResponse extends MutationResponse {
   @Field({ nullable: true })
   user?: User;
 
