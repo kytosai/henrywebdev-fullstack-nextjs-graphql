@@ -13,7 +13,7 @@ import {
 class User extends BaseEntity {
   @Field((_type) => ID) // because ID is special type, it should be specified
   @PrimaryGeneratedColumn()
-  id!: string;
+  id!: number;
 
   @Field()
   @Column({ unique: true })

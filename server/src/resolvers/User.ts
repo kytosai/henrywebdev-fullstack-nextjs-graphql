@@ -1,10 +1,11 @@
 import User from '../entities/User';
-import { Arg, Mutation, Resolver } from 'type-graphql';
+import { Arg, Ctx, Mutation, Resolver } from 'type-graphql';
 import argon2 from 'argon2';
 import UserMutationResponse from '../types/UserMutationResponse';
 import RegisterInput from '../types/RegisterInput';
 import validateRegisterInput from '../utils/validateRegisterInput';
 import LoginInput from '../types/LoginInput';
+import Context from '../types/Context';
 
 @Resolver()
 class UserResolver {
@@ -70,8 +71,13 @@ class UserResolver {
   }
 
   @Mutation(() => UserMutationResponse)
-  async login(@Arg('loginInput') loginInput: LoginInput): Promise<UserMutationResponse> {
+  async login(
+    @Arg('loginInput') loginInput: LoginInput,
+    @Ctx() context: Context,
+  ): Promise<UserMutationResponse> {
     const { usernameOrEmail, password } = loginInput;
+    const { req } = context;
+
     try {
       const existingUser = await User.findOne({
         where: [
@@ -116,6 +122,11 @@ class UserResolver {
           ],
         };
       }
+
+      /*
+        save userId to session
+      */
+      req.session.userId = existingUser.id;
 
       return {
         code: 200,

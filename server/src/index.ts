@@ -13,6 +13,7 @@ import mongoose from 'mongoose';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import { COOKIE_NAME, __prod__ } from './constants';
+import Context from './types/Context';
 
 dotenv.config();
 
@@ -20,7 +21,8 @@ if (
   !process.env.MONGODB_URI ||
   !process.env.DB_NAME ||
   !process.env.DB_USERNAME_DEV ||
-  !process.env.DB_PASSWORD_DEV
+  !process.env.DB_PASSWORD_DEV ||
+  !process.env.SESSION_SECRET
 ) {
   throw Error('env invalid');
 }
@@ -31,7 +33,7 @@ const main = async () => {
     database: process.env.DB_NAME,
     username: process.env.DB_USERNAME_DEV,
     password: process.env.DB_PASSWORD_DEV,
-    logging: true,
+    logging: false, // for debug
     synchronize: true, // ! only use for development
     entities: [User, Post],
   });
@@ -45,11 +47,15 @@ const main = async () => {
   await mongoose.connect(MONGODB_URI);
   console.log('MongoDB connected!');
 
-  // setup session store
+  /* 
+    setup session store
+    Doc
+      - CRSF: https://viblo.asia/p/ky-thuat-tan-cong-csrf-va-cach-phong-chong-amoG84bOGz8P 
+  */
   app.use(
     session({
       name: COOKIE_NAME,
-      secret: process.env.SESSION_SCECRET!,
+      secret: process.env.SESSION_SECRET!,
       saveUninitialized: false, // don't save empty session, right from the start
       resave: false,
       store: MongoStore.create({ mongoUrl: MONGODB_URI }),
@@ -67,6 +73,12 @@ const main = async () => {
       resolvers: [HelloResolver, UserResolver],
       validate: false,
     }),
+    context: ({ req, res }): Context => {
+      return {
+        req,
+        res,
+      };
+    },
 
     /*
       Add local graphql landing page
@@ -79,6 +91,15 @@ const main = async () => {
   apolloServer.applyMiddleware({
     app,
     cors: false,
+  });
+
+  // create this page for test cookie
+  app.get('/cookie', (req: any, res) => {
+    req.session.test = 1;
+
+    return res.json({
+      code: 1,
+    });
   });
 
   const PORT = 4000;
