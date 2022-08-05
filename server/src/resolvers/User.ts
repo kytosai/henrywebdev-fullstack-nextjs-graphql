@@ -127,6 +127,7 @@ class UserResolver {
         save userId to session
       */
       req.session.userId = existingUser.id;
+      console.log({ session: req.session });
 
       return {
         code: 200,
