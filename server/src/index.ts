@@ -10,6 +10,9 @@ import Post from './entities/Post';
 import HelloResolver from './resolvers/Hello';
 import UserResolver from './resolvers/User';
 import mongoose from 'mongoose';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+import { COOKIE_NAME, __prod__ } from './constants';
 
 dotenv.config();
 
@@ -38,8 +41,26 @@ const main = async () => {
   const app = express();
 
   // session/cookie store
-  await mongoose.connect(process.env.MONGODB_URI!);
+  const MONGODB_URI = process.env.MONGODB_URI!;
+  await mongoose.connect(MONGODB_URI);
   console.log('MongoDB connected!');
+
+  // setup session store
+  app.use(
+    session({
+      name: COOKIE_NAME,
+      secret: process.env.SESSION_SCECRET!,
+      saveUninitialized: false, // don't save empty session, right from the start
+      resave: false,
+      store: MongoStore.create({ mongoUrl: MONGODB_URI }),
+      cookie: {
+        maxAge: 1000 * 60 * 60, // 1 hour
+        httpOnly: true, // js frontend cannot access this cookie
+        secure: __prod__, // cookie only work in https
+        sameSite: 'lax', // protect against CRSF
+      },
+    }),
+  );
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
