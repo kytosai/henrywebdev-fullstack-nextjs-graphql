@@ -9,8 +9,18 @@ import User from './entities/User';
 import Post from './entities/Post';
 import HelloResolver from './resolvers/Hello';
 import UserResolver from './resolvers/User';
+import mongoose from 'mongoose';
 
 dotenv.config();
+
+if (
+  !process.env.MONGODB_URI ||
+  !process.env.DB_NAME ||
+  !process.env.DB_USERNAME_DEV ||
+  !process.env.DB_PASSWORD_DEV
+) {
+  throw Error('env invalid');
+}
 
 const main = async () => {
   const myDataSource = new DataSource({
@@ -26,6 +36,10 @@ const main = async () => {
   await myDataSource.initialize();
 
   const app = express();
+
+  // session/cookie store
+  await mongoose.connect(process.env.MONGODB_URI!);
+  console.log('MongoDB connected!');
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
