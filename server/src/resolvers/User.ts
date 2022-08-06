@@ -13,6 +13,7 @@ class UserResolver {
   @Mutation(() => UserMutationResponse)
   async register(
     @Arg('registerInput') registerInput: RegisterInput,
+    @Ctx() context: Context,
   ): Promise<UserMutationResponse> {
     const validateInput = validateRegisterInput(registerInput);
     if (validateInput) {
@@ -25,6 +26,7 @@ class UserResolver {
     }
 
     const { username, email, password } = registerInput;
+    const { req } = context;
 
     try {
       const existingUser = await User.findOne({
@@ -54,6 +56,8 @@ class UserResolver {
       });
 
       const createdUser = await User.save(newUser);
+
+      req.session.userId = createdUser.id;
 
       return {
         code: 200,
