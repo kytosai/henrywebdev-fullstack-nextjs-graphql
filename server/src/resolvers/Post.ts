@@ -1,4 +1,4 @@
-import { Arg, Mutation, Resolver } from 'type-graphql';
+import { Arg, Mutation, Query, Resolver } from 'type-graphql';
 import Post from '../entities/Post';
 import CreatePostInput from '../types/CreatePostInput';
 import PostMutationResponse from '../types/PostMutationResponse';
@@ -33,6 +33,11 @@ class PostResolver {
         message: `interal server error ${error.message}`,
       };
     }
+  }
+
+  @Query(() => [Post])
+  async posts(): Promise<Post[]> {
+    return await Post.find();
   }
 }
 
