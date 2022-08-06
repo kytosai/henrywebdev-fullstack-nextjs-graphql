@@ -102,6 +102,40 @@ class PostResolver {
       };
     }
   }
+
+  @Mutation(() => PostMutationResponse)
+  async deletePost(@Arg('id', () => ID) id: number): Promise<PostMutationResponse> {
+    try {
+      const existingPost = await Post.findOne({
+        where: {
+          id: id.toString(),
+        },
+      });
+
+      if (!existingPost) {
+        return {
+          code: 400,
+          success: false,
+          message: 'post not found',
+        };
+      }
+
+      await Post.delete(id);
+
+      return {
+        code: 200,
+        success: true,
+        message: 'Post deleted successfully!',
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        code: 500,
+        success: false,
+        message: `interal server error ${error.message}`,
+      };
+    }
+  }
 }
 
 export default PostResolver;
