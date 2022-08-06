@@ -1,16 +1,20 @@
-import { Arg, ID, Mutation, Query, Resolver } from 'type-graphql';
+import Context from '../types/Context';
+import { Arg, Ctx, ID, Mutation, Query, Resolver } from 'type-graphql';
 import Post from '../entities/Post';
 import CreatePostInput from '../types/CreatePostInput';
 import PostMutationResponse from '../types/PostMutationResponse';
 import UpdatePostInput from '../types/UpdatePostInput';
+import { AuthenticationError } from 'apollo-server-core';
 
 @Resolver()
 class PostResolver {
   @Mutation(() => PostMutationResponse)
   async createPost(
     @Arg('createPostInput') createPostInput: CreatePostInput,
+    @Ctx() context: Context,
   ): Promise<PostMutationResponse> {
     const { title, text } = createPostInput;
+    const { req } = context;
 
     try {
       const newPost = Post.create({
@@ -104,8 +108,16 @@ class PostResolver {
   }
 
   @Mutation(() => PostMutationResponse)
-  async deletePost(@Arg('id', () => ID) id: number): Promise<PostMutationResponse> {
+  async deletePost(
+    @Arg('id', () => ID) id: number,
+    @Ctx() context: Context,
+  ): Promise<PostMutationResponse> {
     try {
+      const { req } = context;
+      if (!req.session.userId) {
+        throw new AuthenticationError('Not authenticated to perform graphql operations');
+      }
+
       const existingPost = await Post.findOne({
         where: {
           id: id.toString(),
