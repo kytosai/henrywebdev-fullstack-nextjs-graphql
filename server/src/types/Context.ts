@@ -1,10 +1,11 @@
+import { Response, Request } from 'express';
 import { Session, SessionData } from 'express-session';
 
 type Context = {
-  req: Express.Request & {
+  req: Request & {
     session: Session & Partial<SessionData> & { userId?: number };
   };
-  res: Express.Response;
+  res: Response;
 };
 
 export default Context;

@@ -1,3 +1,4 @@
+import { SESSION_COOKIE_NAME } from '../constants';
 import User from '../entities/User';
 import { Arg, Ctx, Mutation, Resolver } from 'type-graphql';
 import argon2 from 'argon2';
@@ -142,6 +143,22 @@ class UserResolver {
         message: `interal server error ${error.message}`,
       };
     }
+  }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() context: Context): Promise<boolean> {
+    return new Promise((resolve) => {
+      const { req, res } = context;
+      res.clearCookie(SESSION_COOKIE_NAME);
+
+      req.session.destroy((error) => {
+        if (error) {
+          resolve(false);
+        }
+
+        resolve(true);
+      });
+    });
   }
 }
 

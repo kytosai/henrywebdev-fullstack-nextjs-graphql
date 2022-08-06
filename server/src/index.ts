@@ -12,7 +12,7 @@ import UserResolver from './resolvers/User';
 import mongoose from 'mongoose';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
-import { COOKIE_NAME, __prod__ } from './constants';
+import { SESSION_COOKIE_NAME, __prod__ } from './constants';
 import Context from './types/Context';
 
 dotenv.config();
@@ -54,7 +54,7 @@ const main = async () => {
   */
   app.use(
     session({
-      name: COOKIE_NAME,
+      name: SESSION_COOKIE_NAME,
       secret: process.env.SESSION_SECRET!,
       saveUninitialized: false, // don't save empty session, right from the start
       resave: false,
