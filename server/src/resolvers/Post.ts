@@ -61,6 +61,47 @@ class PostResolver {
       return null;
     }
   }
+
+  @Mutation(() => PostMutationResponse)
+  async updatePost(
+    @Arg('updatePostInput') updatePostInput: UpdatePostInput,
+  ): Promise<PostMutationResponse> {
+    try {
+      const { id, text, title } = updatePostInput;
+      const existingPost = await Post.findOne({
+        where: {
+          id: id.toString(),
+        },
+      });
+
+      if (!existingPost) {
+        return {
+          code: 400,
+          success: false,
+          message: 'post not found',
+        };
+      }
+
+      existingPost.title = title;
+      existingPost.text = text;
+
+      await existingPost.save();
+
+      return {
+        code: 200,
+        success: true,
+        message: 'Post updated successfully!',
+        post: existingPost,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        code: 500,
+        success: false,
+        message: `interal server error ${error.message}`,
+      };
+    }
+  }
 }
 
 export default PostResolver;
