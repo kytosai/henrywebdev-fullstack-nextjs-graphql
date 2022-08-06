@@ -1,14 +1,15 @@
-import Context from '../types/Context';
-import { Arg, Ctx, ID, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Ctx, ID, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import Post from '../entities/Post';
+import { checkAuth } from '../middleware/checkAuth';
+import Context from '../types/Context';
 import CreatePostInput from '../types/CreatePostInput';
 import PostMutationResponse from '../types/PostMutationResponse';
 import UpdatePostInput from '../types/UpdatePostInput';
-import { AuthenticationError } from 'apollo-server-core';
 
 @Resolver()
 class PostResolver {
   @Mutation(() => PostMutationResponse)
+  @UseMiddleware(checkAuth)
   async createPost(
     @Arg('createPostInput') createPostInput: CreatePostInput,
     @Ctx() context: Context,
@@ -67,6 +68,7 @@ class PostResolver {
   }
 
   @Mutation(() => PostMutationResponse)
+  @UseMiddleware(checkAuth)
   async updatePost(
     @Arg('updatePostInput') updatePostInput: UpdatePostInput,
   ): Promise<PostMutationResponse> {
@@ -108,16 +110,9 @@ class PostResolver {
   }
 
   @Mutation(() => PostMutationResponse)
-  async deletePost(
-    @Arg('id', () => ID) id: number,
-    @Ctx() context: Context,
-  ): Promise<PostMutationResponse> {
+  @UseMiddleware(checkAuth)
+  async deletePost(@Arg('id', () => ID) id: number): Promise<PostMutationResponse> {
     try {
-      const { req } = context;
-      if (!req.session.userId) {
-        throw new AuthenticationError('Not authenticated to perform graphql operations');
-      }
-
       const existingPost = await Post.findOne({
         where: {
           id: id.toString(),
