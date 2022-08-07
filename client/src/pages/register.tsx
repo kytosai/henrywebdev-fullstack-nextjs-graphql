@@ -1,39 +1,14 @@
 import InputField from '@/components/InputField';
 import Wrapper from '@/components/Wrapper';
+import { RegisterInput, useRegisterMutation } from '@/generated/graphql';
 import { Alert, Box, Button } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
-import { useMutation } from '@apollo/client';
-import { registerMutation } from '@/graphqlClient/mutations';
-
-interface UserMutationResponse {
-  code: number;
-  success: boolean;
-  message: string;
-  user: any;
-  errors: {
-    field: string;
-    message: string;
-  }[];
-}
-
-interface NewUserInput {
-  username: string;
-  password: string;
-  email: string;
-}
 
 const RegisterPage = () => {
-  const [register, registerResp] = useMutation<
-    {
-      register: UserMutationResponse;
-    },
-    {
-      registerInput: NewUserInput;
-    }
-  >(registerMutation);
-  const { data, error } = registerResp;
+  const [register, registerState] = useRegisterMutation();
+  const { data, error } = registerState;
 
-  const onRegisterSubmit = async (values: NewUserInput) => {
+  const onRegisterSubmit = async (values: RegisterInput) => {
     try {
       const resp = await register({
         variables: {
@@ -41,14 +16,13 @@ const RegisterPage = () => {
         },
       });
 
-      if (resp.data?.register.success) {
-      }
+      console.log({ resp });
     } catch (error) {
       console.log(error);
     }
   };
 
-  const initialValues: NewUserInput = {
+  const initialValues: RegisterInput = {
     username: '',
     email: '',
     password: '',
