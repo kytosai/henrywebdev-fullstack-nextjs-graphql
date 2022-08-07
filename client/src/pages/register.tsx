@@ -1,21 +1,71 @@
 import InputField from '@/components/InputField';
 import Wrapper from '@/components/Wrapper';
-import { Box, Button, FormControl, FormLabel, Input } from '@chakra-ui/react';
+import { Alert, Box, Button } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
+import { useMutation } from '@apollo/client';
+import { registerMutation } from '@/graphqlClient/mutations';
+
+interface UserMutationResponse {
+  code: number;
+  success: boolean;
+  message: string;
+  user: any;
+  errors: {
+    field: string;
+    message: string;
+  }[];
+}
+
+interface NewUserInput {
+  username: string;
+  password: string;
+  email: string;
+}
 
 const RegisterPage = () => {
+  const [register, registerResp] = useMutation<
+    {
+      register: UserMutationResponse;
+    },
+    {
+      registeInput: NewUserInput;
+    }
+  >(registerMutation);
+  const { data, error } = registerResp;
+
+  const onRegisterSubmit = async (values: NewUserInput) => {
+    try {
+      await register({
+        variables: {
+          registeInput: values,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const initialValues: NewUserInput = {
+    username: '',
+    email: '',
+    password: '',
+  };
+
   return (
     <Wrapper>
-      <Formik
-        initialValues={{
-          username: '',
-          email: '',
-          password: '',
-        }}
-        onSubmit={async (values) => {
-          console.log({ values });
-        }}
-      >
+      {error && (
+        <Alert mb={4} status="error">
+          Failed to register!
+        </Alert>
+      )}
+
+      {data && data.register.success && (
+        <Alert mb={4} status="success">
+          Register successfully!
+        </Alert>
+      )}
+
+      <Formik initialValues={initialValues} onSubmit={onRegisterSubmit}>
         {(props) => {
           const { handleSubmit, isSubmitting } = props;
 
@@ -27,6 +77,10 @@ const RegisterPage = () => {
                 placeholder="Username"
                 label="Username"
               />
+
+              <Box mt={4}>
+                <InputField name="email" type="email" placeholder="email" label="Email" />
+              </Box>
 
               <Box mt={4}>
                 <InputField
