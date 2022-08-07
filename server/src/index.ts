@@ -1,20 +1,21 @@
-import dotenv from 'dotenv';
-import 'reflect-metadata';
-import express from 'express';
-import { DataSource } from 'typeorm';
-import { ApolloServer } from 'apollo-server-express';
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
-import { buildSchema } from 'type-graphql';
-import User from './entities/User';
-import Post from './entities/Post';
-import HelloResolver from './resolvers/Hello';
-import UserResolver from './resolvers/User';
-import mongoose from 'mongoose';
-import session from 'express-session';
+import { ApolloServer } from 'apollo-server-express';
 import MongoStore from 'connect-mongo';
+import dotenv from 'dotenv';
+import express from 'express';
+import session from 'express-session';
+import mongoose from 'mongoose';
+import 'reflect-metadata';
+import { buildSchema } from 'type-graphql';
+import { DataSource } from 'typeorm';
 import { SESSION_COOKIE_NAME, __prod__ } from './constants';
-import Context from './types/Context';
+import Post from './entities/Post';
+import User from './entities/User';
+import HelloResolver from './resolvers/Hello';
 import PostResolver from './resolvers/Post';
+import UserResolver from './resolvers/User';
+import Context from './types/Context';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -42,6 +43,13 @@ const main = async () => {
   await myDataSource.initialize();
 
   const app = express();
+
+  app.use(
+    cors({
+      origin: 'http://localhost:3000',
+      credentials: true, // ! allow receive cookie from client
+    }),
+  );
 
   // session/cookie store
   const MONGODB_URI = process.env.MONGODB_URI!;
