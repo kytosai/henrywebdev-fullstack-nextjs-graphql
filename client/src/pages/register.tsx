@@ -28,18 +28,21 @@ const RegisterPage = () => {
       register: UserMutationResponse;
     },
     {
-      registeInput: NewUserInput;
+      registerInput: NewUserInput;
     }
   >(registerMutation);
   const { data, error } = registerResp;
 
   const onRegisterSubmit = async (values: NewUserInput) => {
     try {
-      await register({
+      const resp = await register({
         variables: {
-          registeInput: values,
+          registerInput: values,
         },
       });
+
+      if (resp.data?.register.success) {
+      }
     } catch (error) {
       console.log(error);
     }
@@ -59,9 +62,13 @@ const RegisterPage = () => {
         </Alert>
       )}
 
-      {data && data.register.success && (
+      {data && data.register.success ? (
         <Alert mb={4} status="success">
           Register successfully!
+        </Alert>
+      ) : (
+        <Alert mb={4} status="error">
+          {data?.register.message}
         </Alert>
       )}
 

@@ -5,6 +5,7 @@ export const registerMutation = gql`
     register(registerInput: $registerInput) {
       code
       message
+      success
       user {
         id
         username
