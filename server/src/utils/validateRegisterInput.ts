@@ -1,25 +1,13 @@
 import RegisterInput from 'src/types/RegisterInput';
 
 const validateRegisterInput = (registerInput: RegisterInput) => {
-  if (!registerInput.email.includes('@')) {
-    return {
-      message: 'invalid email',
-      errors: [
-        {
-          field: 'email',
-          message: 'Email must include @',
-        },
-      ],
-    };
-  }
-
   if (registerInput.username.length <= 2) {
     return {
       message: 'invalid username',
       errors: [
         {
           field: 'username',
-          message: 'Length must be cannot include @',
+          message: 'Length must be greater than 2',
         },
       ],
     };
@@ -37,13 +25,25 @@ const validateRegisterInput = (registerInput: RegisterInput) => {
     };
   }
 
-  if (registerInput.username.length <= 2) {
+  if (!registerInput.email.includes('@')) {
     return {
-      message: 'invalid username',
+      message: 'invalid email',
+      errors: [
+        {
+          field: 'email',
+          message: 'Email must include @',
+        },
+      ],
+    };
+  }
+
+  if (registerInput.password.length <= 2) {
+    return {
+      message: 'invalid password',
       errors: [
         {
           field: 'password',
-          message: 'Length must be cannot include @',
+          message: 'Length must be greater than 2',
         },
       ],
     };

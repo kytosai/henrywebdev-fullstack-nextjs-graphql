@@ -41,7 +41,9 @@ class UserResolver {
           errors: [
             {
               field: existingUser.username === username ? 'username' : 'email',
-              message: 'username or email already taken',
+              message: `${
+                existingUser.username === username ? 'Username' : 'Email'
+              } already taken`,
             },
           ],
         };
