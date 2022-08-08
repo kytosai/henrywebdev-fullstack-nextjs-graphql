@@ -1,0 +1,5 @@
+mutation loginUser($loginInput: LoginInput!) {
+  login(loginInput: $loginInput) {
+    ...userMutationResponse
+  }
+}
