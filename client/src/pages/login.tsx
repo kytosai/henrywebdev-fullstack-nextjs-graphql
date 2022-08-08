@@ -1,30 +1,30 @@
 import InputField from '@/components/InputField';
 import Wrapper from '@/components/Wrapper';
-import { RegisterInput, useRegisterMutation } from '@/generated/graphql';
+import { LoginInput, useLoginUserMutation } from '@/generated/graphql';
 import { mapFieldErrors } from '@/helpers/mapFieldErrors';
 import { Alert, Box, Button } from '@chakra-ui/react';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { useRouter } from 'next/router';
 
-const RegisterPage = () => {
+const LoginPage = () => {
   const router = useRouter();
-  const [register, registerState] = useRegisterMutation();
-  const { data, error } = registerState;
+  const [login, loginState] = useLoginUserMutation();
+  const { data, error } = loginState;
 
-  const onRegisterSubmit = async (
-    values: RegisterInput,
-    { setErrors }: FormikHelpers<RegisterInput>,
+  const onLoginSubmit = async (
+    values: LoginInput,
+    { setErrors }: FormikHelpers<LoginInput>,
   ) => {
     try {
-      const resp = await register({
+      const resp = await login({
         variables: {
-          registerInput: values,
+          loginInput: values,
         },
       });
 
-      if (resp.data?.register.errors) {
-        setErrors(mapFieldErrors(resp.data.register.errors));
-      } else if (resp.data?.register.user) {
+      if (resp.data?.login.errors) {
+        setErrors(mapFieldErrors(resp.data.login.errors));
+      } else if (resp.data?.login.user) {
         // successfully
         router.push('/');
       }
@@ -33,9 +33,8 @@ const RegisterPage = () => {
     }
   };
 
-  const initialValues: RegisterInput = {
-    username: '',
-    email: '',
+  const initialValues: LoginInput = {
+    usernameOrEmail: '',
     password: '',
   };
 
@@ -43,32 +42,28 @@ const RegisterPage = () => {
     <Wrapper>
       {error && (
         <Alert mb={4} status="error">
-          Failed to register! Internal server error
+          Failed to login! Internal server error
         </Alert>
       )}
 
-      {data && data.register.success && (
+      {data && data.login.success && (
         <Alert mb={4} status="success">
-          Register successfully!
+          Login successfully!
         </Alert>
       )}
 
-      <Formik initialValues={initialValues} onSubmit={onRegisterSubmit}>
+      <Formik initialValues={initialValues} onSubmit={onLoginSubmit}>
         {(props) => {
           const { handleSubmit, isSubmitting } = props;
 
           return (
             <Form onSubmit={handleSubmit}>
               <InputField
-                name="username"
+                name="usernameOrEmail"
                 type="text"
-                placeholder="Username"
-                label="Username"
+                placeholder="username or email"
+                label="Username or Email"
               />
-
-              <Box mt={4}>
-                <InputField name="email" type="email" placeholder="email" label="Email" />
-              </Box>
 
               <Box mt={4}>
                 <InputField
@@ -96,4 +91,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default LoginPage;
