@@ -1,14 +1,20 @@
 import InputField from '@/components/InputField';
 import Wrapper from '@/components/Wrapper';
 import { RegisterInput, useRegisterMutation } from '@/generated/graphql';
+import { mapFieldErrors } from '@/helpers/mapFieldErrors';
 import { Alert, Box, Button } from '@chakra-ui/react';
-import { Form, Formik } from 'formik';
+import { Form, Formik, FormikHelpers } from 'formik';
+import { useRouter } from 'next/router';
 
 const RegisterPage = () => {
+  const router = useRouter();
   const [register, registerState] = useRegisterMutation();
   const { data, error } = registerState;
 
-  const onRegisterSubmit = async (values: RegisterInput) => {
+  const onRegisterSubmit = async (
+    values: RegisterInput,
+    { setErrors }: FormikHelpers<RegisterInput>,
+  ) => {
     try {
       const resp = await register({
         variables: {
@@ -16,7 +22,12 @@ const RegisterPage = () => {
         },
       });
 
-      console.log({ resp });
+      if (resp.data?.register.errors) {
+        setErrors(mapFieldErrors(resp.data.register.errors));
+      } else if (resp.data?.register.user) {
+        // successfully
+        router.push('/');
+      }
     } catch (error) {
       console.log(error);
     }
@@ -36,13 +47,9 @@ const RegisterPage = () => {
         </Alert>
       )}
 
-      {data && data.register.success ? (
+      {data && data.register.success && (
         <Alert mb={4} status="success">
           Register successfully!
-        </Alert>
-      ) : (
-        <Alert mb={4} status="error">
-          {data?.register.message}
         </Alert>
       )}
 
