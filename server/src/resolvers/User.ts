@@ -1,6 +1,6 @@
 import { SESSION_COOKIE_NAME } from '../constants';
 import User from '../entities/User';
-import { Arg, Ctx, Mutation, Resolver } from 'type-graphql';
+import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import argon2 from 'argon2';
 import UserMutationResponse from '../types/UserMutationResponse';
 import RegisterInput from '../types/RegisterInput';
@@ -10,6 +10,20 @@ import Context from '../types/Context';
 
 @Resolver()
 class UserResolver {
+  /*
+    Use for get user info for logged user
+  */
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() context: Context): Promise<User | null> {
+    const { req } = context;
+    if (!req.session.userId) {
+      return null;
+    }
+
+    const user = await User.findOne({ where: [{ id: req.session.userId }] });
+    return user;
+  }
+
   @Mutation(() => UserMutationResponse)
   async register(
     @Arg('registerInput') registerInput: RegisterInput,
