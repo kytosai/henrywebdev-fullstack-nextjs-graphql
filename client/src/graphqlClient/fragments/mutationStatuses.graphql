@@ -1,5 +1,5 @@
-fragment mutationStatuses on MutationResponse {
-  code
-  message
-  success
+fragment userMutationStatuses on UserMutationResponse {
+	code
+	success
+	message
 }

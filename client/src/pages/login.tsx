@@ -1,6 +1,6 @@
 import InputField from '@/components/InputField';
 import Wrapper from '@/components/Wrapper';
-import { LoginInput, useLoginUserMutation } from '@/generated/graphql';
+import { LoginInput, MeDocument, useLoginMutation } from '@/generated/graphql';
 import { mapFieldErrors } from '@/helpers/mapFieldErrors';
 import { Alert, Box, Button } from '@chakra-ui/react';
 import { Form, Formik, FormikHelpers } from 'formik';
@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 
 const LoginPage = () => {
   const router = useRouter();
-  const [login, loginState] = useLoginUserMutation();
+  const [loginUser, loginState] = useLoginMutation();
   const { data, error } = loginState;
 
   const onLoginSubmit = async (
@@ -16,11 +16,20 @@ const LoginPage = () => {
     { setErrors }: FormikHelpers<LoginInput>,
   ) => {
     try {
-      const resp = await login({
+      const resp = await loginUser({
         variables: {
           loginInput: values,
         },
+        update(cache, { data }) {
+          console.log('LOGIN DATA', data?.login);
+          console.log('CACHE', cache);
+
+          const meData = cache.readQuery({ query: MeDocument });
+          console.log('CACHE ME', meData);
+        },
       });
+
+      console.log(resp.data);
 
       if (resp.data?.login.errors) {
         setErrors(mapFieldErrors(resp.data.login.errors));
