@@ -1,7 +1,35 @@
+import { useMeQuery } from '@/generated/graphql';
 import { Box, Flex, Heading, Link } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
 const Navbar = () => {
+  const { data, loading } = useMeQuery();
+
+  let body = null;
+  if (!loading) {
+    if (data?.me?.id) {
+      body = (
+        <>
+          <NextLink href="/logout" passHref>
+            <Link mr={2}>Logout</Link>
+          </NextLink>
+        </>
+      );
+    } else {
+      body = (
+        <>
+          <NextLink href="/login" passHref>
+            <Link mr={2}>Login</Link>
+          </NextLink>
+
+          <NextLink href="/register" passHref>
+            <Link>Register</Link>
+          </NextLink>
+        </>
+      );
+    }
+  }
+
   return (
     <Box bg="tan">
       <Flex
@@ -16,15 +44,7 @@ const Navbar = () => {
             <Link>Reddit</Link>
           </NextLink>
         </Heading>
-        <Box>
-          <NextLink href="/login" passHref>
-            <Link mr={2}>Login</Link>
-          </NextLink>
-
-          <NextLink href="/register" passHref>
-            <Link>Register</Link>
-          </NextLink>
-        </Box>
+        <Box>{body}</Box>
       </Flex>
     </Box>
   );
