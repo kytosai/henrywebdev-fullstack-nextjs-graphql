@@ -1,6 +1,6 @@
 import InputField from '@/components/InputField';
 import Wrapper from '@/components/Wrapper';
-import { LoginInput, MeDocument, useLoginMutation } from '@/generated/graphql';
+import { LoginInput, MeDocument, MeQuery, useLoginMutation } from '@/generated/graphql';
 import { mapFieldErrors } from '@/helpers/mapFieldErrors';
 import { Alert, Box, Button } from '@chakra-ui/react';
 import { Form, Formik, FormikHelpers } from 'formik';
@@ -21,11 +21,17 @@ const LoginPage = () => {
           loginInput: values,
         },
         update(cache, { data }) {
-          console.log('LOGIN DATA', data?.login);
-          console.log('CACHE', cache);
-
-          const meData = cache.readQuery({ query: MeDocument });
-          console.log('CACHE ME', meData);
+          /*
+            Write on old cache `me` query with new info user logged to update layout match the logged status
+          */
+          if (data?.login.success) {
+            cache.writeQuery<MeQuery>({
+              query: MeDocument,
+              data: {
+                me: data.login.user, // because `me` and `user` have same graphql fragment `userInfo`
+              },
+            });
+          }
         },
       });
 
