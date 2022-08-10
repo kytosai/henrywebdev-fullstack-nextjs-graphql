@@ -2,14 +2,20 @@ import InputField from '@/components/InputField';
 import Wrapper from '@/components/Wrapper';
 import { LoginInput, MeDocument, MeQuery, useLoginMutation } from '@/generated/graphql';
 import { mapFieldErrors } from '@/helpers/mapFieldErrors';
-import { Alert, Box, Button } from '@chakra-ui/react';
+import { useCheckAuth } from '@/utils/useCheckAuth';
+import { Alert, Box, Button, Spinner } from '@chakra-ui/react';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { useRouter } from 'next/router';
 
 const LoginPage = () => {
   const router = useRouter();
+  const { data: authData, loading: authLoading } = useCheckAuth();
   const [loginUser, loginState] = useLoginMutation();
   const { data, error } = loginState;
+  const initialValues: LoginInput = {
+    usernameOrEmail: '',
+    password: '',
+  };
 
   const onLoginSubmit = async (
     values: LoginInput,
@@ -48,10 +54,13 @@ const LoginPage = () => {
     }
   };
 
-  const initialValues: LoginInput = {
-    usernameOrEmail: '',
-    password: '',
-  };
+  if (authLoading || (!authLoading && authData?.me)) {
+    return (
+      <Box textAlign="center" p={8}>
+        <Spinner />
+      </Box>
+    );
+  }
 
   return (
     <Wrapper>

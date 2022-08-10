@@ -1,15 +1,28 @@
 import InputField from '@/components/InputField';
 import Wrapper from '@/components/Wrapper';
-import { RegisterInput, useRegisterMutation } from '@/generated/graphql';
+import {
+  MeDocument,
+  MeQuery,
+  RegisterInput,
+  useRegisterMutation,
+} from '@/generated/graphql';
 import { mapFieldErrors } from '@/helpers/mapFieldErrors';
-import { Alert, Box, Button } from '@chakra-ui/react';
+import { useCheckAuth } from '@/utils/useCheckAuth';
+import { Alert, Box, Button, Spinner } from '@chakra-ui/react';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { useRouter } from 'next/router';
 
 const RegisterPage = () => {
   const router = useRouter();
+  const { data: authData, loading: authLoading } = useCheckAuth();
   const [register, registerState] = useRegisterMutation();
   const { data, error } = registerState;
+
+  const initialValues: RegisterInput = {
+    username: '',
+    email: '',
+    password: '',
+  };
 
   const onRegisterSubmit = async (
     values: RegisterInput,
@@ -19,6 +32,19 @@ const RegisterPage = () => {
       const resp = await register({
         variables: {
           registerInput: values,
+        },
+        update(cache, { data }) {
+          /*
+            Write on old cache `me` query with new info user logged to update layout match the logged status
+          */
+          if (data?.register.success) {
+            cache.writeQuery<MeQuery>({
+              query: MeDocument,
+              data: {
+                me: data.register.user, // because `me` and `user` have same graphql fragment `userInfo`
+              },
+            });
+          }
         },
       });
 
@@ -33,11 +59,13 @@ const RegisterPage = () => {
     }
   };
 
-  const initialValues: RegisterInput = {
-    username: '',
-    email: '',
-    password: '',
-  };
+  if (authLoading || (!authLoading && authData?.me)) {
+    return (
+      <Box textAlign="center" p={8}>
+        <Spinner />
+      </Box>
+    );
+  }
 
   return (
     <Wrapper>
