@@ -1,18 +1,38 @@
-import { useMeQuery } from '@/generated/graphql';
-import { Box, Flex, Heading, Link } from '@chakra-ui/react';
+import { MeDocument, MeQuery, useLogoutMutation, useMeQuery } from '@/generated/graphql';
+import { Box, Button, Flex, Heading, Link } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
 const Navbar = () => {
   const { data, loading } = useMeQuery();
+  const [logout, { loading: logoutLoading }] = useLogoutMutation();
+
+  const handleLogout = async () => {
+    await logout({
+      update(cache, { data }) {
+        if (!data?.logout) return;
+        cache.writeQuery<MeQuery>({
+          query: MeDocument,
+          data: {
+            me: null,
+          },
+        });
+      },
+    });
+  };
 
   let body = null;
   if (!loading) {
     if (data?.me?.id) {
       body = (
         <>
-          <NextLink href="/logout" passHref>
-            <Link mr={2}>Logout</Link>
-          </NextLink>
+          <Button
+            mr={2}
+            onClick={handleLogout}
+            isLoading={logoutLoading}
+            isDisabled={logoutLoading}
+          >
+            Logout
+          </Button>
         </>
       );
     } else {
