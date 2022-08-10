@@ -54,12 +54,13 @@ const RegisterPage = () => {
       } else if (resp.data?.register.user) {
         toast({
           title: 'Welcome to my site',
-          description: `Logged with username ${resp.data.register.user.username}`,
+          description: `Registered with username ${resp.data.register.user.username}`,
           status: 'success',
           duration: 3000,
           isClosable: true,
+          position: 'top',
         });
-        
+
         router.push('/');
       }
     } catch (error) {
