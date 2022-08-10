@@ -8,7 +8,7 @@ import {
 } from '@/generated/graphql';
 import { mapFieldErrors } from '@/helpers/mapFieldErrors';
 import { useCheckAuth } from '@/utils/useCheckAuth';
-import { Alert, Box, Button, Spinner } from '@chakra-ui/react';
+import { Alert, Box, Button, Spinner, useToast } from '@chakra-ui/react';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { useRouter } from 'next/router';
 
@@ -17,6 +17,7 @@ const RegisterPage = () => {
   const { data: authData, loading: authLoading } = useCheckAuth();
   const [register, registerState] = useRegisterMutation();
   const { data, error } = registerState;
+  const toast = useToast();
 
   const initialValues: RegisterInput = {
     username: '',
@@ -51,7 +52,14 @@ const RegisterPage = () => {
       if (resp.data?.register.errors) {
         setErrors(mapFieldErrors(resp.data.register.errors));
       } else if (resp.data?.register.user) {
-        // successfully
+        toast({
+          title: 'Welcome to my site',
+          description: `Logged with username ${resp.data.register.user.username}`,
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+        
         router.push('/');
       }
     } catch (error) {

@@ -3,7 +3,7 @@ import Wrapper from '@/components/Wrapper';
 import { LoginInput, MeDocument, MeQuery, useLoginMutation } from '@/generated/graphql';
 import { mapFieldErrors } from '@/helpers/mapFieldErrors';
 import { useCheckAuth } from '@/utils/useCheckAuth';
-import { Alert, Box, Button, Spinner } from '@chakra-ui/react';
+import { Alert, Box, Button, Spinner, useToast } from '@chakra-ui/react';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { useRouter } from 'next/router';
 
@@ -12,6 +12,7 @@ const LoginPage = () => {
   const { data: authData, loading: authLoading } = useCheckAuth();
   const [loginUser, loginState] = useLoginMutation();
   const { data, error } = loginState;
+  const toast = useToast();
   const initialValues: LoginInput = {
     usernameOrEmail: '',
     password: '',
@@ -46,7 +47,15 @@ const LoginPage = () => {
       if (resp.data?.login.errors) {
         setErrors(mapFieldErrors(resp.data.login.errors));
       } else if (resp.data?.login.user) {
-        // successfully
+        toast({
+          title: 'Welcome to my site',
+          description: `Logged with username ${resp.data.login.user.username}`,
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top',
+        });
+
         router.push('/');
       }
     } catch (error) {
