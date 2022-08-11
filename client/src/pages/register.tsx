@@ -4,7 +4,7 @@ import {
   MeDocument,
   MeQuery,
   RegisterInput,
-  useRegisterMutation,
+  useRegisterMutation
 } from '@/generated/graphql';
 import { mapFieldErrors } from '@/helpers/mapFieldErrors';
 import { useCheckAuth } from '@/utils/useCheckAuth';

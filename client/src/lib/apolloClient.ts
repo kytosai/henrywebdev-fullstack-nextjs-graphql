@@ -1,13 +1,26 @@
-import { useMemo } from 'react';
-import { ApolloClient, HttpLink, InMemoryCache, from } from '@apollo/client';
+/*  
+  Git: https://github.com/vercel/next.js/blob/canary/examples/with-apollo/lib/apolloClient.js 
+*/
+import {
+  ApolloClient,
+  from,
+  HttpLink,
+  InMemoryCache,
+  NormalizedCacheObject,
+} from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { concatPagination } from '@apollo/client/utilities';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
+import { useMemo } from 'react';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
 
-let apolloClient;
+let apolloClient: ApolloClient<NormalizedCacheObject>;
+
+interface ApolloStateProps {
+  [APOLLO_STATE_PROP_NAME]?: NormalizedCacheObject;
+}
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
@@ -20,27 +33,24 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const httpLink = new HttpLink({
-  uri: 'https://nextjs-graphql-with-prisma-simple.vercel.app/api', // Server URL (must be absolute)
-  credentials: 'same-origin', // Additional fetch() options like `credentials` or `headers`
+  uri: 'http://localhost:4000/graphql', // Server URL (must be absolute)
+
+  /*
+    ! must have to get cookie from server
+    Additional fetch() options like `credentials` or `headers`
+  */
+  credentials: 'include',
 });
 
 function createApolloClient() {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: from([errorLink, httpLink]),
-    cache: new InMemoryCache({
-      typePolicies: {
-        Query: {
-          fields: {
-            allPosts: concatPagination(),
-          },
-        },
-      },
-    }),
+    cache: new InMemoryCache(),
   });
 }
 
-export function initializeApollo(initialState = null) {
+export function initializeApollo(initialState: NormalizedCacheObject | null = null) {
   const _apolloClient = apolloClient ?? createApolloClient();
 
   // If your page has Next.js data fetching methods that use Apollo Client, the initial state
@@ -69,7 +79,12 @@ export function initializeApollo(initialState = null) {
   return _apolloClient;
 }
 
-export function addApolloState(client, pageProps) {
+export function addApolloState(
+  client: ApolloClient<NormalizedCacheObject>,
+  pageProps: {
+    props: ApolloStateProps;
+  },
+) {
   if (pageProps?.props) {
     pageProps.props[APOLLO_STATE_PROP_NAME] = client.cache.extract();
   }
@@ -77,7 +92,7 @@ export function addApolloState(client, pageProps) {
   return pageProps;
 }
 
-export function useApollo(pageProps) {
+export function useApollo(pageProps: ApolloStateProps) {
   const state = pageProps[APOLLO_STATE_PROP_NAME];
   const store = useMemo(() => initializeApollo(state), [state]);
   return store;
