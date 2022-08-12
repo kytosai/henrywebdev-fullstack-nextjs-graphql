@@ -1,6 +1,7 @@
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
 import { ApolloServer } from 'apollo-server-express';
 import MongoStore from 'connect-mongo';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import session from 'express-session';
@@ -15,7 +16,6 @@ import HelloResolver from './resolvers/Hello';
 import PostResolver from './resolvers/Post';
 import UserResolver from './resolvers/User';
 import Context from './types/Context';
-import cors from 'cors';
 
 dotenv.config();
 
