@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 const ForgotPasswordPage = () => {
   const router = useRouter();
   const { data: authData, loading: authLoading } = useCheckAuth();
-  const [forgotPassword, { data, error, loading }] = useForgotPasswordMutation();
+  const [forgotPassword, { data, loading }] = useForgotPasswordMutation();
   const initialValues: ForgotPasswordInput = { email: '' };
 
   const onForgotPasswordSubmit = async (values: ForgotPasswordInput) => {
