@@ -114,7 +114,7 @@ const LoginPage = () => {
                 isDisabled={isSubmitting}
                 isLoading={isSubmitting}
               >
-                Register
+                Login
               </Button>
             </Form>
           );
