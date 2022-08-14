@@ -6,6 +6,7 @@ import {
   Mutation,
   Query,
   Resolver,
+  Root,
   UseMiddleware,
 } from 'type-graphql';
 import Post from '../entities/Post';
@@ -21,8 +22,8 @@ class PostResolver {
     Field resolver the same with computed (vue) or useMemo (react). It help us combine form multiple fields to create a new result
   */
   @FieldResolver(() => String)
-  textSnippet() {
-    return 'hello you';
+  textSnippet(@Root() parent: Post) {
+    return parent.text.slice(0, 50);
   }
 
   @Mutation(() => PostMutationResponse)
