@@ -3,7 +3,7 @@ import { Field, InputType } from 'type-graphql';
 @InputType()
 class ChangePasswordInput {
   @Field()
-  newPasword: string;
+  newPassword: string;
 }
 
 export default ChangePasswordInput;

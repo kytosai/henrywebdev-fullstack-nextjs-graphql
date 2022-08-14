@@ -228,7 +228,7 @@ class UserResolver {
     @Arg('changePasswordInput') changePasswordInput: ChangePasswordInput,
     @Ctx() context: Context,
   ): Promise<UserMutationResponse> {
-    if (changePasswordInput.newPasword.length <= 2) {
+    if (changePasswordInput.newPassword.length <= 2) {
       return {
         code: 400,
         success: false,
@@ -301,7 +301,7 @@ class UserResolver {
       }
 
       // Update new password to db
-      const updatedPassword = await argon2.hash(changePasswordInput.newPasword);
+      const updatedPassword = await argon2.hash(changePasswordInput.newPassword);
       await User.update(
         {
           id: parseInt(userId),
