@@ -43,7 +43,7 @@ const HomePage = () => {
                 <Text>posted by Author</Text>
 
                 <Flex align="center" mt={4}>
-                  <Text>Text snippet</Text>
+                  <Text>{post.textSnippet}</Text>
                   <Box ml="auto">EDIT Button</Box>
                 </Flex>
               </Box>

@@ -3,6 +3,7 @@ query Posts {
     id
     title
     text
+    textSnippet
     createdAt
     updateAt
   }
