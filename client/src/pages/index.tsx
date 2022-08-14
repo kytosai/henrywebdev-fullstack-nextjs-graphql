@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout';
+import PostEditDeleteButtons from '@/components/PostEditDeleteButtons';
 import { PostsDocument, usePostsQuery } from '@/generated/graphql';
 import { addApolloState, initializeApollo } from '@/lib/apolloClient';
 import { Box, Flex, Heading, Link, Spinner, Stack, Text } from '@chakra-ui/react';
@@ -33,7 +34,7 @@ const HomePage = () => {
         {data?.posts.map((post) => {
           return (
             <Flex key={post.id} shadow="md" p={4} borderWidth={1}>
-              <Box>
+              <Box w="100%">
                 <NextLink href={`/post/${post.id}`} passHref>
                   <Link>
                     <Heading fontSize="xl">{post.title}</Heading>
@@ -43,8 +44,13 @@ const HomePage = () => {
                 <Text>Posted by {post.user.username}</Text>
 
                 <Flex align="center" mt={4}>
-                  <Text>{post.textSnippet}</Text>
-                  <Box ml="auto">EDIT Button</Box>
+                  <Box flexGrow="">
+                    <Text>{post.textSnippet}</Text>
+                  </Box>
+
+                  <Box ml="auto">
+                    <PostEditDeleteButtons />
+                  </Box>
                 </Flex>
               </Box>
             </Flex>
