@@ -4,9 +4,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import Post from './Post';
 
 @ObjectType() // set this class is type in graphql
 @Entity() // table in postgres
@@ -25,6 +27,10 @@ class User extends BaseEntity {
 
   @Column()
   password!: string;
+
+  @Field(() => [Post])
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
 
   @Field()
   @CreateDateColumn()

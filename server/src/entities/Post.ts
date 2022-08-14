@@ -4,9 +4,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import User from './User';
 
 @ObjectType() // set this class is type in graphql
 @Entity()
@@ -18,6 +20,14 @@ class Post extends BaseEntity {
   @Field()
   @Column()
   title!: string;
+
+  @Field()
+  @Column()
+  userId!: number;
+
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.posts)
+  user: User;
 
   @Field()
   @Column()

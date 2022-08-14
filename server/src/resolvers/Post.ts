@@ -1,3 +1,4 @@
+import User from '../entities/User';
 import {
   Arg,
   Ctx,
@@ -24,6 +25,11 @@ class PostResolver {
   @FieldResolver(() => String)
   textSnippet(@Root() parent: Post) {
     return parent.text.slice(0, 50);
+  }
+
+  @FieldResolver(() => User)
+  async user(@Root() root: Post) {
+    return await User.findOne({ where: [{ id: root.userId }] });
   }
 
   @Mutation(() => PostMutationResponse)
