@@ -103,7 +103,7 @@ const ChangePasswordPage = () => {
   }
 
   return (
-    <Wrapper>
+    <Wrapper size="small">
       {!!tokenError && (
         <Alert status="error" mb={4}>
           <Box>

@@ -1,8 +1,8 @@
-import Navbar from '@/components/Navbar';
+import Layout from '@/components/Layout';
 import { PostsDocument, usePostsQuery } from '@/generated/graphql';
 import { addApolloState, initializeApollo } from '@/lib/apolloClient';
-import { Box } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { Box, Flex, Heading, Link, Spinner, Stack, Text } from '@chakra-ui/react';
+import NextLink from 'next/link';
 
 export const getStaticProps = async () => {
   const apolloClient = initializeApollo();
@@ -19,21 +19,39 @@ export const getStaticProps = async () => {
 const HomePage = () => {
   const { data, loading } = usePostsQuery();
 
-  if (!loading) {
-    console.log({ data });
+  if (loading) {
+    return (
+      <Box textAlign="center">
+        <Spinner />
+      </Box>
+    );
   }
 
   return (
-    <>
-      <Navbar />
-      {data?.posts.map((item) => {
-        return (
-          <Box key={item.id}>
-            <Box>{item.title}</Box>
-          </Box>
-        );
-      })}
-    </>
+    <Layout>
+      <Stack spacing={4}>
+        {data?.posts.map((post) => {
+          return (
+            <Flex key={post.id} shadow="md" p={4} borderWidth={1}>
+              <Box>
+                <NextLink href={`/post/${post.id}`} passHref>
+                  <Link>
+                    <Heading fontSize="xl">{post.title}</Heading>
+                  </Link>
+                </NextLink>
+
+                <Text>posted by Author</Text>
+
+                <Flex align="center" mt={4}>
+                  <Text>Text snippet</Text>
+                  <Box ml="auto">EDIT Button</Box>
+                </Flex>
+              </Box>
+            </Flex>
+          );
+        })}
+      </Stack>
+    </Layout>
   );
 };
 

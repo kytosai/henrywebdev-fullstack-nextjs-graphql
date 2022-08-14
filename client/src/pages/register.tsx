@@ -4,7 +4,7 @@ import {
   MeDocument,
   MeQuery,
   RegisterInput,
-  useRegisterMutation
+  useRegisterMutation,
 } from '@/generated/graphql';
 import { mapFieldErrors } from '@/helpers/mapFieldErrors';
 import { useCheckAuth } from '@/utils/useCheckAuth';
@@ -77,7 +77,7 @@ const RegisterPage = () => {
   }
 
   return (
-    <Wrapper>
+    <Wrapper size="small">
       {error && (
         <Alert mb={4} status="error">
           Failed to register! Internal server error

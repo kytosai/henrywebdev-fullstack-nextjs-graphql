@@ -73,7 +73,7 @@ const LoginPage = () => {
   }
 
   return (
-    <Wrapper>
+    <Wrapper size="small">
       {error && (
         <Alert mb={4} status="error">
           Failed to login! Internal server error

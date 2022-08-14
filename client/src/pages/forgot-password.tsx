@@ -34,7 +34,7 @@ const ForgotPasswordPage = () => {
   }
 
   return (
-    <Wrapper>
+    <Wrapper size="small">
       <Formik initialValues={initialValues} onSubmit={onForgotPasswordSubmit}>
         {(props) => {
           const { handleSubmit, isSubmitting } = props;
