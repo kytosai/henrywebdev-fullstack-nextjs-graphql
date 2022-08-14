@@ -4,6 +4,7 @@ import {
   Ctx,
   FieldResolver,
   ID,
+  Int,
   Mutation,
   Query,
   Resolver,
@@ -16,6 +17,8 @@ import Context from '../types/Context';
 import CreatePostInput from '../types/CreatePostInput';
 import PostMutationResponse from '../types/PostMutationResponse';
 import UpdatePostInput from '../types/UpdatePostInput';
+import PaginatedPostsResponse from '../types/PaginatedPosts';
+import { FindManyOptions, LessThan } from 'typeorm';
 
 @Resolver(() => Post)
 class PostResolver {
@@ -65,10 +68,46 @@ class PostResolver {
     }
   }
 
-  @Query(() => [Post])
-  async posts(): Promise<Post[] | null> {
+  @Query(() => PaginatedPostsResponse, { nullable: true })
+  async posts(
+    @Arg('limit', () => Int) limit: number,
+    @Arg('cursor', { nullable: true }) cursor?: string,
+  ): Promise<PaginatedPostsResponse | null> {
     try {
-      return await Post.find();
+      const totalCount = await Post.count();
+      const realLimit = Math.min(10, limit);
+
+      const findOptions: { [key: string]: any } = {
+        order: {
+          createdAt: 'DESC',
+        },
+        take: realLimit,
+      };
+
+      let lastPost: Post | null = null;
+      if (cursor) {
+        findOptions.where = { createdAt: LessThan(cursor) };
+
+        // last post
+        const posts = await Post.find({
+          order: {
+            createdAt: 'ASC',
+          },
+          take: 1,
+        });
+
+        lastPost = posts[0];
+      }
+
+      const posts = await Post.find(findOptions);
+      const nextCursor = posts[posts.length - 1].createdAt;
+
+      return {
+        cursor: nextCursor,
+        totalCount,
+        hasMore: lastPost?.createdAt.toString() !== nextCursor.toString(),
+        paginatedPosts: posts,
+      };
     } catch (error) {
       console.log(error);
       return null;

@@ -34,11 +34,21 @@ class Post extends BaseEntity {
   text!: string;
 
   @Field()
-  @CreateDateColumn()
+  @CreateDateColumn({
+    /*
+      must set it for setup pagination with post base on date cursor. default it is `timestampt without time zone`
+    */
+    type: 'timestamptz',
+  })
   createdAt: Date;
 
   @Field()
-  @UpdateDateColumn()
+  @CreateDateColumn({
+    /*
+      must set it for setup pagination with post base on date cursor. default it is `timestampt without time zone`
+    */
+    type: 'timestamptz',
+  })
   updateAt: Date;
 }
 
