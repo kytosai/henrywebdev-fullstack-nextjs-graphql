@@ -40,7 +40,7 @@ const HomePage = () => {
                   </Link>
                 </NextLink>
 
-                <Text>posted by Author</Text>
+                <Text>Posted by {post.user.username}</Text>
 
                 <Flex align="center" mt={4}>
                   <Text>{post.textSnippet}</Text>
