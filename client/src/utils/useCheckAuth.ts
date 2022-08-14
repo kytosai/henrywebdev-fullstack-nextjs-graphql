@@ -10,7 +10,9 @@ export const useCheckAuth = () => {
     if (
       data?.me &&
       !loading &&
-      (router.route === '/login' || router.route === '/register')
+      ['/login', '/register', '/change-password', '/forgot-password'].includes(
+        router.route,
+      )
     ) {
       router.replace('/');
     }

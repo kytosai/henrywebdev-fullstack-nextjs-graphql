@@ -2,9 +2,10 @@ import InputField from '@/components/InputField';
 import Wrapper from '@/components/Wrapper';
 import { ForgotPasswordInput, useForgotPasswordMutation } from '@/generated/graphql';
 import { useCheckAuth } from '@/utils/useCheckAuth';
-import { Box, Button, Spinner } from '@chakra-ui/react';
-import { Form, Formik, FormikHelpers } from 'formik';
+import { Box, Button, Flex, Link, Spinner } from '@chakra-ui/react';
+import { Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 
 const ForgotPasswordPage = () => {
   const router = useRouter();
@@ -46,15 +47,20 @@ const ForgotPasswordPage = () => {
             <Form onSubmit={handleSubmit}>
               <InputField name="email" type="email" placeholder="email" label="Email" />
 
-              <Button
-                mt={4}
-                type="submit"
-                colorScheme="teal"
-                isDisabled={isSubmitting}
-                isLoading={isSubmitting}
-              >
-                Submit
-              </Button>
+              <Flex mt={4} alignItems="center" justifyContent="space-between">
+                <Button
+                  type="submit"
+                  colorScheme="teal"
+                  isDisabled={isSubmitting}
+                  isLoading={isSubmitting}
+                >
+                  Submit
+                </Button>
+
+                <NextLink href="/login" passHref>
+                  <Link>Back to login</Link>
+                </NextLink>
+              </Flex>
             </Form>
           );
         }}

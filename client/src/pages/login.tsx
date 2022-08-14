@@ -3,9 +3,10 @@ import Wrapper from '@/components/Wrapper';
 import { LoginInput, MeDocument, MeQuery, useLoginMutation } from '@/generated/graphql';
 import { mapFieldErrors } from '@/helpers/mapFieldErrors';
 import { useCheckAuth } from '@/utils/useCheckAuth';
-import { Alert, Box, Button, Spinner, useToast } from '@chakra-ui/react';
+import { Alert, Box, Button, Flex, Link, Spinner, useToast } from '@chakra-ui/react';
 import { Form, Formik, FormikHelpers } from 'formik';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -107,15 +108,20 @@ const LoginPage = () => {
                 />
               </Box>
 
-              <Button
-                mt={4}
-                type="submit"
-                colorScheme="teal"
-                isDisabled={isSubmitting}
-                isLoading={isSubmitting}
-              >
-                Login
-              </Button>
+              <Flex mt={4} alignItems="center" justifyContent="space-between">
+                <Button
+                  type="submit"
+                  colorScheme="teal"
+                  isDisabled={isSubmitting}
+                  isLoading={isSubmitting}
+                >
+                  Login
+                </Button>
+
+                <NextLink href="/forgot-password" passHref>
+                  <Link>Forgot password?</Link>
+                </NextLink>
+              </Flex>
             </Form>
           );
         }}
