@@ -1,4 +1,13 @@
-import { Arg, Ctx, ID, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
+import {
+  Arg,
+  Ctx,
+  FieldResolver,
+  ID,
+  Mutation,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from 'type-graphql';
 import Post from '../entities/Post';
 import { checkAuth } from '../middleware/checkAuth';
 import Context from '../types/Context';
@@ -6,8 +15,16 @@ import CreatePostInput from '../types/CreatePostInput';
 import PostMutationResponse from '../types/PostMutationResponse';
 import UpdatePostInput from '../types/UpdatePostInput';
 
-@Resolver()
+@Resolver(() => Post)
 class PostResolver {
+  /*
+    Field resolver the same with computed (vue) or useMemo (react). It help us combine form multiple fields to create a new result
+  */
+  @FieldResolver(() => String)
+  textSnippet() {
+    return 'hello you';
+  }
+
   @Mutation(() => PostMutationResponse)
   @UseMiddleware(checkAuth)
   async createPost(
