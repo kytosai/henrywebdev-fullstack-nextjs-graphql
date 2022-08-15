@@ -1,5 +1,5 @@
 import argon2 from 'argon2';
-import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from 'type-graphql';
 import { v4 as uuidv4 } from 'uuid';
 import { SESSION_COOKIE_NAME } from '../constants';
 import User from '../entities/User';
@@ -13,8 +13,18 @@ import { sendEmail } from '../utils/sendEmail';
 import validateRegisterInput from '../utils/validateRegisterInput';
 import { TokenModel } from './../models/Token';
 
-@Resolver()
+@Resolver(() => User)
 class UserResolver {
+  @FieldResolver(() => String)
+  email(@Root() root: User, @Ctx() context: Context) {
+    const { req } = context;
+    if (req.session.userId === root.id) {
+      return root.email;
+    }
+
+    return '';
+  }
+
   /*
     Use for get user info for logged user
   */
