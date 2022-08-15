@@ -2,7 +2,8 @@ import Layout from '@/components/Layout';
 import PostEditDeleteButtons from '@/components/PostEditDeleteButtons';
 import { PostsDocument, usePostsQuery } from '@/generated/graphql';
 import { addApolloState, initializeApollo } from '@/lib/apolloClient';
-import { Box, Flex, Heading, Link, Spinner, Stack, Text } from '@chakra-ui/react';
+import { NetworkStatus } from '@apollo/client';
+import { Box, Button, Flex, Heading, Link, Spinner, Stack, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
 const limit = 2;
@@ -23,19 +24,31 @@ export const getStaticProps = async () => {
 };
 
 const HomePage = () => {
-  const { data, loading } = usePostsQuery({
+  const { data, loading, error, fetchMore, networkStatus } = usePostsQuery({
     variables: {
       limit,
     },
+
+    /*
+      Component render by posts query will re-render when networkStatus change. Means when `fetchMore` run
+    */
+    notifyOnNetworkStatusChange: true,
   });
 
-  if (loading) {
-    return (
-      <Box textAlign="center">
-        <Spinner />
-      </Box>
-    );
-  }
+  console.log({
+    networkStatus,
+  });
+
+  const loadingMorePosts = networkStatus === NetworkStatus.fetchMore;
+
+  const loadMorePosts = async () => {
+    fetchMore({
+      variables: {
+        limit,
+        cursor: data?.posts?.cursor,
+      },
+    });
+  };
 
   return (
     <Layout>
@@ -66,6 +79,14 @@ const HomePage = () => {
           );
         })}
       </Stack>
+
+      {data?.posts?.hasMore && (
+        <Flex justifyContent="center" mt={4}>
+          <Button mx="auto" isLoading={loadingMorePosts} onClick={loadMorePosts}>
+            Load more
+          </Button>
+        </Flex>
+      )}
     </Layout>
   );
 };

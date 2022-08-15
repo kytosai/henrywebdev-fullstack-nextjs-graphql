@@ -1,6 +1,7 @@
 /*  
   Git: https://github.com/vercel/next.js/blob/canary/examples/with-apollo/lib/apolloClient.js 
 */
+import { Post } from '@/generated/graphql';
 import {
   ApolloClient,
   from,
@@ -46,7 +47,39 @@ function createApolloClient() {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: from([errorLink, httpLink]),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        /*
+          `Query` here is taken from `__typename` in apollo cache tab 
+          Doc: https://www.apollographql.com/docs/react/caching/cache-configuration/#typepolicy-fields 
+        */
+        Query: {
+          fields: {
+            posts: { // handle cache for query `posts` field
+              keyArgs: false,
+              merge(existing, incoming) {
+                console.log('Cache posts', {
+                  existing,
+                  incoming,
+                });
+
+                let paginatedPosts: Post[] = [];
+
+                if (existing && existing.paginatedPosts) {
+                  paginatedPosts = paginatedPosts.concat(existing.paginatedPosts);
+                }
+
+                if (incoming && incoming.paginatedPosts) {
+                  paginatedPosts = paginatedPosts.concat(incoming.paginatedPosts);
+                }
+
+                return { ...incoming, paginatedPosts };
+              },
+            },
+          },
+        },
+      },
+    }),
   });
 }
 
