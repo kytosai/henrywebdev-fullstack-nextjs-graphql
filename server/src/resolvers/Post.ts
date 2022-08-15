@@ -45,9 +45,12 @@ class PostResolver {
     const { req } = context;
 
     try {
+      const userId = req.session.userId;
+
       const newPost = Post.create({
         title,
         text,
+        userId,
       });
 
       const createdPost = await newPost.save();
@@ -134,7 +137,10 @@ class PostResolver {
   @UseMiddleware(checkAuth)
   async updatePost(
     @Arg('updatePostInput') updatePostInput: UpdatePostInput,
+    @Ctx() context: Context,
   ): Promise<PostMutationResponse> {
+    const { req } = context;
+
     try {
       const { id, text, title } = updatePostInput;
       const existingPost = await Post.findOne({
@@ -148,6 +154,14 @@ class PostResolver {
           code: 400,
           success: false,
           message: 'post not found',
+        };
+      }
+
+      if (existingPost.userId !== req.session.userId) {
+        return {
+          code: 401,
+          success: false,
+          message: 'Unauthorized',
         };
       }
 
@@ -174,7 +188,12 @@ class PostResolver {
 
   @Mutation(() => PostMutationResponse)
   @UseMiddleware(checkAuth)
-  async deletePost(@Arg('id', () => ID) id: number): Promise<PostMutationResponse> {
+  async deletePost(
+    @Arg('id', () => ID) id: number,
+    @Ctx() context: Context,
+  ): Promise<PostMutationResponse> {
+    const { req } = context;
+
     try {
       const existingPost = await Post.findOne({
         where: {
@@ -187,6 +206,14 @@ class PostResolver {
           code: 400,
           success: false,
           message: 'post not found',
+        };
+      }
+
+      if (existingPost.userId !== req.session.userId) {
+        return {
+          code: 401,
+          success: false,
+          message: 'Unauthorized',
         };
       }
 
