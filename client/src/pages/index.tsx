@@ -49,6 +49,13 @@ const HomePage = () => {
       },
     });
   };
+  if (loading && !loadingMorePosts) {
+    return (
+      <Box textAlign="center">
+        <Spinner />
+      </Box>
+    );
+  }
 
   return (
     <Layout>
