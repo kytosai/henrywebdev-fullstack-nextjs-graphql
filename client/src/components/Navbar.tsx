@@ -25,8 +25,13 @@ const Navbar = () => {
     if (data?.me?.id) {
       body = (
         <>
+          <NextLink href="/create-post" passHref>
+            <Button as="a" mr={2}>
+              Create post
+            </Button>
+          </NextLink>
+
           <Button
-            mr={2}
             onClick={handleLogout}
             isLoading={logoutLoading}
             isDisabled={logoutLoading}

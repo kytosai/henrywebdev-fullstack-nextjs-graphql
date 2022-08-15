@@ -58,7 +58,7 @@ function createApolloClient() {
             posts: { // handle cache for query `posts` field
               keyArgs: false,
               merge(existing, incoming) {
-                console.log('Cache posts', {
+                console.log('Cache posts InMemoryCache', {
                   existing,
                   incoming,
                 });

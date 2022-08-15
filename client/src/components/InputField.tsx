@@ -1,4 +1,10 @@
-import { FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
+import {
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+  Textarea,
+} from '@chakra-ui/react';
 import { useField } from 'formik';
 import { HTMLInputTypeAttribute } from 'react';
 
@@ -7,6 +13,7 @@ interface InputFieldProps {
   label: string;
   type: HTMLInputTypeAttribute;
   placeholder?: string;
+  textarea?: boolean;
 }
 
 const InputField = (props: InputFieldProps) => {
@@ -16,7 +23,11 @@ const InputField = (props: InputFieldProps) => {
     <FormControl isInvalid={!!error}>
       <FormLabel htmlFor={props.name}>{props.label}</FormLabel>
 
-      <Input placeholder={props.placeholder} {...field} />
+      {props.textarea ? (
+        <Textarea {...field} />
+      ) : (
+        <Input placeholder={props.placeholder} {...field} />
+      )}
 
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
     </FormControl>
