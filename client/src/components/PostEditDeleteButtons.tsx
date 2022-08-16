@@ -7,6 +7,7 @@ import { Reference } from '@apollo/client';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { Box, IconButton } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 
 interface PostEditDeleteButtonsProps {
   postId: string;
@@ -14,6 +15,7 @@ interface PostEditDeleteButtonsProps {
 }
 
 const PostEditDeleteButtons = (props: PostEditDeleteButtonsProps) => {
+  const router = useRouter();
   const { postId, postUserId } = props;
   const { data: meData } = useMeQuery();
   const [deletePost] = useDeletePostMutation();
@@ -54,6 +56,10 @@ const PostEditDeleteButtons = (props: PostEditDeleteButtonsProps) => {
         }
       },
     });
+
+    if (router.route !== '/') {
+      router.push('/');
+    }
   };
 
   return (
