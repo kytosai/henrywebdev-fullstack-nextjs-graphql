@@ -27,6 +27,32 @@ const CreatePostPage = () => {
         variables: {
           createPostInput: values,
         },
+        // update(cache, { data }) {
+        //   cache.modify({
+        //     fields: {
+        //       posts(existing) {
+        //         console.log('Cache post in createPost', {
+        //           existing,
+        //         });
+
+        //         if (data?.createPost.success && data?.createPost.post) {
+        //           const newPostRef = cache.identify(data.createPost.post); // Ex: `Post:newId`
+
+        //           const newPostsAfterCreation = {
+        //             ...existing,
+        //             totalCount: existing.totalCount + 1,
+        //             paginatedPosts: [
+        //               { __ref: newPostRef },
+        //               ...existing.paginatedPosts, // Ex: [{__ref: 'Post:1'},{__ref: 'Post:2'}]
+        //             ],
+        //           };
+
+        //           return newPostsAfterCreation;
+        //         } // endif
+        //       },
+        //     },
+        //   });
+        // },
       });
 
       if (resp.data?.createPost.success) {
