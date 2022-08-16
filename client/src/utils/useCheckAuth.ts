@@ -15,7 +15,7 @@ export const useCheckAuth = () => {
         )
       ) {
         router.replace('/');
-      } else if (!data?.me) {
+      } else if (!data?.me && router.route !== '/login') {
         router.replace('/login');
       }
     }
