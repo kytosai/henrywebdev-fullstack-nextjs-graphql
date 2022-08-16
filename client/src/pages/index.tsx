@@ -4,11 +4,12 @@ import { PostsDocument, usePostsQuery } from '@/generated/graphql';
 import { addApolloState, initializeApollo } from '@/lib/apolloClient';
 import { NetworkStatus } from '@apollo/client';
 import { Box, Button, Flex, Heading, Link, Spinner, Stack, Text } from '@chakra-ui/react';
+import { GetStaticProps } from 'next';
 import NextLink from 'next/link';
 
 const limit = 2;
 
-export const getStaticProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   const apolloClient = initializeApollo();
 
   await apolloClient.query({
@@ -49,7 +50,7 @@ const HomePage = () => {
       },
     });
   };
-  
+
   if (loading && !loadingMorePosts) {
     return (
       <Box textAlign="center">
