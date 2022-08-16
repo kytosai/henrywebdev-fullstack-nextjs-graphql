@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout';
+import PostEditDeleteButtons from '@/components/PostEditDeleteButtons';
 import { PostDocument, PostQuery, usePostQuery } from '@/generated/graphql';
 import { addApolloState, initializeApollo } from '@/lib/apolloClient';
 import { Alert, Box, Flex, Heading, Spinner } from '@chakra-ui/react';
@@ -62,6 +63,9 @@ const PostPage = () => {
     <Layout>
       <Heading mb={4}>{data.post.title}</Heading>
       <Box>{data.post.text}</Box>
+      <Box mt={4}>
+        <PostEditDeleteButtons postId={data.post.id} />
+      </Box>
     </Layout>
   );
 };

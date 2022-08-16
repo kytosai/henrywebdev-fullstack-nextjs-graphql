@@ -1,6 +1,6 @@
 import Layout from '@/components/Layout';
 import PostEditDeleteButtons from '@/components/PostEditDeleteButtons';
-import { PostsDocument, usePostsQuery } from '@/generated/graphql';
+import { PostsDocument, useMeQuery, usePostsQuery } from '@/generated/graphql';
 import { addApolloState, initializeApollo } from '@/lib/apolloClient';
 import { NetworkStatus } from '@apollo/client';
 import { Box, Button, Flex, Heading, Link, Spinner, Stack, Text } from '@chakra-ui/react';
@@ -25,6 +25,7 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const HomePage = () => {
+  const { data: meData } = useMeQuery();
   const { data, loading, error, fetchMore, networkStatus } = usePostsQuery({
     variables: {
       limit,
@@ -34,10 +35,6 @@ const HomePage = () => {
       Component render by posts query will re-render when networkStatus change. Means when `fetchMore` run
     */
     notifyOnNetworkStatusChange: true,
-  });
-
-  console.log({
-    networkStatus,
   });
 
   const loadingMorePosts = networkStatus === NetworkStatus.fetchMore;
@@ -79,9 +76,11 @@ const HomePage = () => {
                     <Text>{post.textSnippet}</Text>
                   </Box>
 
-                  <Box ml="auto">
-                    <PostEditDeleteButtons />
-                  </Box>
+                  {meData?.me?.id === post.user.id && (
+                    <Box ml="auto">
+                      <PostEditDeleteButtons postId={post.id} />
+                    </Box>
+                  )}
                 </Flex>
               </Box>
             </Flex>
