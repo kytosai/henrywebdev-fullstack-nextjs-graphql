@@ -40,6 +40,16 @@ const PostPage = () => {
     },
   });
 
+  if (loading) {
+    return (
+      <Layout>
+        <Flex justifyContent="center">
+          <Spinner />
+        </Flex>
+      </Layout>
+    );
+  }
+
   if (error || !data?.post) {
     return (
       <Layout>
@@ -50,16 +60,8 @@ const PostPage = () => {
 
   return (
     <Layout>
-      {loading ? (
-        <Flex justifyContent="center">
-          <Spinner />
-        </Flex>
-      ) : (
-        <>
-          <Heading mb={4}>{data.post.title}</Heading>
-          <Box>{data.post.text}</Box>
-        </>
-      )}
+      <Heading mb={4}>{data.post.title}</Heading>
+      <Box>{data.post.text}</Box>
     </Layout>
   );
 };
