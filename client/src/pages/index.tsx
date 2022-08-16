@@ -76,11 +76,9 @@ const HomePage = () => {
                     <Text>{post.textSnippet}</Text>
                   </Box>
 
-                  {meData?.me?.id === post.user.id && (
-                    <Box ml="auto">
-                      <PostEditDeleteButtons postId={post.id} />
-                    </Box>
-                  )}
+                  <Box ml="auto">
+                    <PostEditDeleteButtons postId={post.id} postUserId={post.user.id} />
+                  </Box>
                 </Flex>
               </Box>
             </Flex>

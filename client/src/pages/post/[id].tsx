@@ -34,7 +34,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const PostPage = () => {
-  const { data: meData } = useMeQuery();
   const router = useRouter();
   const { data, loading, error } = usePostQuery({
     variables: {
@@ -65,11 +64,9 @@ const PostPage = () => {
       <Heading mb={4}>{data.post.title}</Heading>
       <Box>{data.post.text}</Box>
 
-      {meData?.me?.id === data.post.user.id && (
-        <Box mt={4}>
-          <PostEditDeleteButtons postId={data.post.id} />
-        </Box>
-      )}
+      <Box mt={4}>
+        <PostEditDeleteButtons postId={data.post.id} postUserId={data.post.user.id} />
+      </Box>
     </Layout>
   );
 };
