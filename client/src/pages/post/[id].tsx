@@ -1,6 +1,6 @@
 import Layout from '@/components/Layout';
 import PostEditDeleteButtons from '@/components/PostEditDeleteButtons';
-import { PostDocument, PostQuery, usePostQuery } from '@/generated/graphql';
+import { PostDocument, PostQuery, useMeQuery, usePostQuery } from '@/generated/graphql';
 import { addApolloState, initializeApollo } from '@/lib/apolloClient';
 import { Alert, Box, Flex, Heading, Spinner } from '@chakra-ui/react';
 import { GetStaticPaths, GetStaticProps } from 'next';
@@ -34,6 +34,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const PostPage = () => {
+  const { data: meData } = useMeQuery();
   const router = useRouter();
   const { data, loading, error } = usePostQuery({
     variables: {
@@ -63,9 +64,12 @@ const PostPage = () => {
     <Layout>
       <Heading mb={4}>{data.post.title}</Heading>
       <Box>{data.post.text}</Box>
-      <Box mt={4}>
-        <PostEditDeleteButtons postId={data.post.id} />
-      </Box>
+
+      {meData?.me?.id === data.post.user.id && (
+        <Box mt={4}>
+          <PostEditDeleteButtons postId={data.post.id} />
+        </Box>
+      )}
     </Layout>
   );
 };
