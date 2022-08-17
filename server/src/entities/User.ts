@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import Post from './Post';
+import Upvote from './Upvote';
 
 @ObjectType() // set this class is type in graphql
 @Entity() // table in postgres
@@ -31,6 +32,9 @@ class User extends BaseEntity {
   @Field(() => [Post])
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
+
+  @OneToMany(() => Upvote, (upvote) => upvote.user)
+  upvotes: Upvote[];
 
   @Field()
   @CreateDateColumn()

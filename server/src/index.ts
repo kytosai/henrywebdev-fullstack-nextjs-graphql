@@ -11,6 +11,7 @@ import { buildSchema } from 'type-graphql';
 import { DataSource } from 'typeorm';
 import { SESSION_COOKIE_NAME, __prod__ } from './constants';
 import Post from './entities/Post';
+import Upvote from './entities/Upvote';
 import User from './entities/User';
 import HelloResolver from './resolvers/Hello';
 import PostResolver from './resolvers/Post';
@@ -37,7 +38,7 @@ const main = async () => {
     password: process.env.DB_PASSWORD_DEV,
     logging: false, // for debug
     synchronize: true, // ! only use for development, auto create table
-    entities: [User, Post],
+    entities: [User, Post, Upvote],
   });
 
   await myDataSource.initialize();

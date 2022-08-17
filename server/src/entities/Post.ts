@@ -5,9 +5,11 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import Upvote from './Upvote';
 import User from './User';
 
 @ObjectType() // set this class is type in graphql
@@ -24,6 +26,13 @@ class Post extends BaseEntity {
   @Field()
   @Column()
   userId!: number;
+
+  @OneToMany(() => Upvote, (upvote) => upvote.post)
+  upvotes: Upvote[];
+
+  @Field()
+  @Column({ default: 0 })
+  points!: number; // calc of total up/down vote
 
   @Field(() => User)
   @ManyToOne(() => User, (user) => user.posts)
