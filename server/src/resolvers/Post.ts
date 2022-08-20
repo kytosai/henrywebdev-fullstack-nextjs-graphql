@@ -249,7 +249,7 @@ class PostResolver {
   @UseMiddleware(checkAuth)
   async vote(
     @Arg('postId', () => Int) postId: number,
-    @Arg('voteType', () => VoteType) voteType: VoteType,
+    @Arg('inputVoteValue', () => VoteType) inputVoteValue: VoteType,
     @Ctx() context: Context,
   ): Promise<PostMutationResponse> {
     const { req, connection } = context;
@@ -263,6 +263,7 @@ class PostResolver {
         Doc: https://typeorm.io/transactions
       */
       return await connection.transaction(async (transactionEntityManager) => {
+        // check if post exists
         let post = await transactionEntityManager.findOne(Post, {
           where: [{ id: postId }],
         });
@@ -272,16 +273,39 @@ class PostResolver {
 
         const userId = req.session.userId;
 
-        const newVote = transactionEntityManager.create(Upvote, {
-          postId,
-          userId,
-          value: voteType,
+        // check if user has voted or not for this post
+        const existingVote = await transactionEntityManager.findOne(Upvote, {
+          where: [
+            {
+              postId,
+              userId,
+            },
+          ],
         });
 
-        await transactionEntityManager.save(newVote);
+        if (existingVote && existingVote.value !== inputVoteValue) {
+          await transactionEntityManager.save(Upvote, {
+            ...existingVote,
+            value: inputVoteValue,
+          });
 
-        post.points = post.points + voteType;
-        post = await transactionEntityManager.save(post);
+          post = await transactionEntityManager.save(Post, {
+            ...post,
+            points: post.points + inputVoteValue * 2,
+          });
+        }
+
+        if (!existingVote) {
+          const newVote = transactionEntityManager.create(Upvote, {
+            postId,
+            userId,
+            value: inputVoteValue,
+          });
+
+          await transactionEntityManager.save(newVote);
+          post.points = post.points + inputVoteValue;
+          post = await transactionEntityManager.save(post);
+        }
 
         return {
           code: 200,
