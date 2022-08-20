@@ -122,6 +122,7 @@ export type Post = {
   updateAt: Scalars['DateTime'];
   user: User;
   userId: Scalars['Float'];
+  voteType: Scalars['Int'];
 };
 
 export type PostMutationResponse = MutationResponse & {
@@ -194,9 +195,9 @@ export type UserMutationStatusesFragment = { __typename?: 'UserMutationResponse'
 
 export type PostMutationStatusesFragment = { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null };
 
-export type PostMutationResponseFragment = { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, title: string, text: string, textSnippet: string, createdAt: any, points: number, user: { __typename?: 'User', id: string, username: string, email: string } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null };
+export type PostMutationResponseFragment = { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, title: string, text: string, textSnippet: string, createdAt: any, points: number, voteType: number, user: { __typename?: 'User', id: string, username: string, email: string } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null };
 
-export type PostWithUserInfoFragment = { __typename?: 'Post', id: string, title: string, text: string, textSnippet: string, createdAt: any, points: number, user: { __typename?: 'User', id: string, username: string, email: string } };
+export type PostWithUserInfoFragment = { __typename?: 'Post', id: string, title: string, text: string, textSnippet: string, createdAt: any, points: number, voteType: number, user: { __typename?: 'User', id: string, username: string, email: string } };
 
 export type UserInfoFragment = { __typename?: 'User', id: string, username: string, email: string };
 
@@ -216,7 +217,7 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, title: string, text: string, textSnippet: string, createdAt: any, points: number, user: { __typename?: 'User', id: string, username: string, email: string } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, title: string, text: string, textSnippet: string, createdAt: any, points: number, voteType: number, user: { __typename?: 'User', id: string, username: string, email: string } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
 
 export type DeletePostMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -256,7 +257,7 @@ export type UpdatePostMutationVariables = Exact<{
 }>;
 
 
-export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, title: string, text: string, textSnippet: string, createdAt: any, points: number, user: { __typename?: 'User', id: string, username: string, email: string } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
+export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, title: string, text: string, textSnippet: string, createdAt: any, points: number, voteType: number, user: { __typename?: 'User', id: string, username: string, email: string } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
 
 export type VoteMutationVariables = Exact<{
   postId: Scalars['Int'];
@@ -264,7 +265,7 @@ export type VoteMutationVariables = Exact<{
 }>;
 
 
-export type VoteMutation = { __typename?: 'Mutation', vote: { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, title: string, text: string, textSnippet: string, createdAt: any, points: number, user: { __typename?: 'User', id: string, username: string, email: string } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
+export type VoteMutation = { __typename?: 'Mutation', vote: { __typename?: 'PostMutationResponse', code: number, success: boolean, message?: string | null, post?: { __typename?: 'Post', id: string, title: string, text: string, textSnippet: string, createdAt: any, points: number, voteType: number, user: { __typename?: 'User', id: string, username: string, email: string } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -284,7 +285,7 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts?: { __typename?: 'PaginatedPostsResponse', totalCount: number, cursor: any, hasMore: boolean, paginatedPosts: Array<{ __typename?: 'Post', id: string, title: string, text: string, textSnippet: string, createdAt: any, points: number, user: { __typename?: 'User', id: string, username: string, email: string } }> } | null };
+export type PostsQuery = { __typename?: 'Query', posts?: { __typename?: 'PaginatedPostsResponse', totalCount: number, cursor: any, hasMore: boolean, paginatedPosts: Array<{ __typename?: 'Post', id: string, title: string, text: string, textSnippet: string, createdAt: any, points: number, voteType: number, user: { __typename?: 'User', id: string, username: string, email: string } }> } | null };
 
 export const PostMutationStatusesFragmentDoc = gql`
     fragment postMutationStatuses on PostMutationResponse {
@@ -308,6 +309,7 @@ export const PostWithUserInfoFragmentDoc = gql`
   textSnippet
   createdAt
   points
+  voteType
   user {
     ...userInfo
   }

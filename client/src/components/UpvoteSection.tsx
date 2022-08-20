@@ -7,6 +7,11 @@ interface UpvoteSectionProps {
   post: PostWithUserInfoFragment;
 }
 
+enum VoteTypeValues {
+  Upvote = 1,
+  Downvote = -1,
+}
+
 const UpvoteSection = (props: UpvoteSectionProps) => {
   const { post } = props;
   const [loadingState, setLoadingState] = useState<
@@ -45,8 +50,9 @@ const UpvoteSection = (props: UpvoteSectionProps) => {
       <IconButton
         icon={<ChevronUpIcon />}
         aria-label="upvote"
-        onClick={handleUpvote}
+        onClick={post.voteType === VoteTypeValues.Upvote ? undefined : handleUpvote}
         isLoading={loading && loadingState === 'upvote-loading'}
+        colorScheme={post.voteType === VoteTypeValues.Upvote ? 'green' : undefined}
       ></IconButton>
 
       <Box textAlign="center" py={2}>
@@ -56,8 +62,9 @@ const UpvoteSection = (props: UpvoteSectionProps) => {
       <IconButton
         icon={<ChevronDownIcon />}
         aria-label="downvote"
-        onClick={handleDownvote}
+        onClick={post.voteType === VoteTypeValues.Downvote ? undefined : handleDownvote}
         isLoading={loading && loadingState === 'downvote-loading'}
+        colorScheme={post.voteType === VoteTypeValues.Downvote ? 'red' : undefined}
       ></IconButton>
     </Flex>
   );
