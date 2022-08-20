@@ -1,3 +1,4 @@
+import { VoteType } from './../types/VoteType';
 import { Field, ID, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
