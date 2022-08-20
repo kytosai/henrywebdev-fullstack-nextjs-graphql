@@ -4,6 +4,7 @@ fragment postWithUserInfo on Post {
   text
   textSnippet
   createdAt
+  points
   user {
     ...userInfo
   }

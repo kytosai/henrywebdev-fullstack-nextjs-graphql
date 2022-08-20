@@ -1,6 +1,7 @@
 import Layout from '@/components/Layout';
 import PostEditDeleteButtons from '@/components/PostEditDeleteButtons';
-import { PostsDocument, useMeQuery, usePostsQuery } from '@/generated/graphql';
+import UpvoteSection from '@/components/UpvoteSection';
+import { PostsDocument, usePostsQuery } from '@/generated/graphql';
 import { addApolloState, initializeApollo } from '@/lib/apolloClient';
 import { NetworkStatus } from '@apollo/client';
 import { Box, Button, Flex, Heading, Link, Spinner, Stack, Text } from '@chakra-ui/react';
@@ -25,8 +26,7 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const HomePage = () => {
-  const { data: meData } = useMeQuery();
-  const { data, loading, error, fetchMore, networkStatus } = usePostsQuery({
+  const { data, loading, fetchMore, networkStatus } = usePostsQuery({
     variables: {
       limit,
     },
@@ -62,6 +62,8 @@ const HomePage = () => {
         {data?.posts?.paginatedPosts.map((post) => {
           return (
             <Flex key={post.id} shadow="md" p={4} borderWidth={1}>
+              <UpvoteSection post={post} />
+
               <Box w="100%">
                 <NextLink href={`/post/${post.id}`} passHref>
                   <Link>
