@@ -31,7 +31,7 @@ if (
 }
 
 const main = async () => {
-  const myDataSource = new DataSource({
+  const connection = new DataSource({
     type: 'postgres',
     database: process.env.DB_NAME,
     username: process.env.DB_USERNAME_DEV,
@@ -41,7 +41,7 @@ const main = async () => {
     entities: [User, Post, Upvote],
   });
 
-  await myDataSource.initialize();
+  await connection.initialize();
 
   const app = express();
 
@@ -87,6 +87,7 @@ const main = async () => {
       return {
         req,
         res,
+        connection,
       };
     },
 

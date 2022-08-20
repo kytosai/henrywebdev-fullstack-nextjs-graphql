@@ -17,7 +17,7 @@ import User from './User';
 class Post extends BaseEntity {
   @Field((_type) => ID) // because ID is special type, it should be specified
   @PrimaryGeneratedColumn()
-  id!: string;
+  id!: number;
 
   @Field()
   @Column()

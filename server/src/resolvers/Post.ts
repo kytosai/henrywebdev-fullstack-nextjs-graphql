@@ -1,4 +1,4 @@
-import User from '../entities/User';
+import { UserInputError } from 'apollo-server-core';
 import {
   Arg,
   Ctx,
@@ -7,18 +7,29 @@ import {
   Int,
   Mutation,
   Query,
+  registerEnumType,
   Resolver,
   Root,
   UseMiddleware,
 } from 'type-graphql';
+import { LessThan } from 'typeorm';
 import Post from '../entities/Post';
+import Upvote from '../entities/Upvote';
+import User from '../entities/User';
 import { checkAuth } from '../middleware/checkAuth';
 import Context from '../types/Context';
 import CreatePostInput from '../types/CreatePostInput';
+import PaginatedPostsResponse from '../types/PaginatedPosts';
 import PostMutationResponse from '../types/PostMutationResponse';
 import UpdatePostInput from '../types/UpdatePostInput';
-import PaginatedPostsResponse from '../types/PaginatedPosts';
-import { FindManyOptions, LessThan } from 'typeorm';
+import { VoteType } from './../types/VoteType';
+
+/*
+  doc: https://typegraphql.com/docs/0.17.0/enums.html#usage 
+*/
+registerEnumType(VoteType, {
+  name: 'VoteType', // this one is mandatory
+});
 
 @Resolver(() => Post)
 class PostResolver {
@@ -122,7 +133,7 @@ class PostResolver {
     try {
       const post = await Post.findOne({
         where: {
-          id: id.toString(),
+          id,
         },
       });
 
@@ -145,7 +156,7 @@ class PostResolver {
       const { id, text, title } = updatePostInput;
       const existingPost = await Post.findOne({
         where: {
-          id: id.toString(),
+          id,
         },
       });
 
@@ -197,7 +208,7 @@ class PostResolver {
     try {
       const existingPost = await Post.findOne({
         where: {
-          id: id.toString(),
+          id,
         },
       });
 
@@ -224,6 +235,61 @@ class PostResolver {
         success: true,
         message: 'Post deleted successfully!',
       };
+    } catch (error) {
+      console.log(error);
+      return {
+        code: 500,
+        success: false,
+        message: `interal server error ${error.message}`,
+      };
+    }
+  }
+
+  @Mutation(() => PostMutationResponse)
+  @UseMiddleware(checkAuth)
+  async vote(
+    @Arg('postId', () => Int) postId: number,
+    @Arg('voteType', () => VoteType) voteType: VoteType,
+    @Ctx() context: Context,
+  ): Promise<PostMutationResponse> {
+    const { req, connection } = context;
+
+    try {
+      /*
+        When implementing a feature, we need to execute many sql commands such as select, intert,.. continously to complete it. This easily leads to the risk that one of our commands will fail, leading to feature not being completed, the database has been affected.
+
+        Transaction help us to execute many sql commands continuously and if there is one error, all previous executions of sql commands will be completed aborted.
+
+        Doc: https://typeorm.io/transactions
+      */
+      return await connection.transaction(async (transactionEntityManager) => {
+        let post = await transactionEntityManager.findOne(Post, {
+          where: [{ id: postId }],
+        });
+        if (!post) {
+          throw new UserInputError('Post not found');
+        }
+
+        const userId = req.session.userId;
+
+        const newVote = transactionEntityManager.create(Upvote, {
+          postId,
+          userId,
+          value: voteType,
+        });
+
+        await transactionEntityManager.save(newVote);
+
+        post.points = post.points + voteType;
+        post = await transactionEntityManager.save(post);
+
+        return {
+          code: 200,
+          success: true,
+          message: 'Post vote success',
+          post,
+        };
+      });
     } catch (error) {
       console.log(error);
       return {
