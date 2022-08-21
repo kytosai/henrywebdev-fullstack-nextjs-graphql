@@ -15,7 +15,6 @@ enum VoteTypeValues {
 
 const UpvoteSection = (props: UpvoteSectionProps) => {
   const { post } = props;
-  const router = useRouter();
 
   const [loadingState, setLoadingState] = useState<
     'upvote-loading' | 'downvote-loading' | 'not-loading'
@@ -35,7 +34,7 @@ const UpvoteSection = (props: UpvoteSectionProps) => {
 
       setLoadingState('not-loading');
     } catch (error) {
-      router.push('/login');
+      console.log(error);
     }
   };
 
@@ -52,7 +51,7 @@ const UpvoteSection = (props: UpvoteSectionProps) => {
 
       setLoadingState('not-loading');
     } catch (error) {
-      router.push('/login');
+      console.log(error);
     }
   };
 

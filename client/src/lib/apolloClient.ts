@@ -7,12 +7,15 @@ import {
   ApolloClient,
   HttpLink,
   InMemoryCache,
+  from,
   NormalizedCacheObject,
 } from '@apollo/client';
-import fetch from 'isomorphic-unfetch';
+import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import { IncomingHttpHeaders } from 'http';
+import fetch from 'isomorphic-unfetch';
 import isEqual from 'lodash/isEqual';
+import Router from 'next/router';
 import { useMemo } from 'react';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
@@ -22,6 +25,28 @@ let apolloClient: ApolloClient<NormalizedCacheObject>;
 interface ApolloStateProps {
   [APOLLO_STATE_PROP_NAME]?: NormalizedCacheObject;
 }
+
+const errorLink = onError((errors) => {
+  const { graphQLErrors, networkError } = errors;
+
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
+      ),
+    );
+  }
+
+  if (networkError) {
+    console.log(`[Network error]: ${networkError}`);
+  }
+
+  // Validate no authenticated error
+  if (graphQLErrors?.[0].extensions?.code == 'UNAUTHENTICATED' && errors.response) {
+    errors.response.errors = undefined; // remove response error to outside
+    Router.replace('/login');
+  }
+});
 
 function createApolloClient(headers: IncomingHttpHeaders | null = null) {
   // isomorphic fetch for passing the cookies along with each GraphQL request
@@ -37,18 +62,20 @@ function createApolloClient(headers: IncomingHttpHeaders | null = null) {
     });
   };
 
+  const httpLink = new HttpLink({
+    uri: 'http://localhost:4000/graphql', // Server URL (must be absolute)
+
+    /*
+      ! must have to get cookie from server
+      Additional fetch() options like `credentials` or `headers`
+    */
+    credentials: 'include',
+    fetch: enhancedFetch,
+  });
+
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: new HttpLink({
-      uri: 'http://localhost:4000/graphql', // Server URL (must be absolute)
-
-      /*
-        ! must have to get cookie from server
-        Additional fetch() options like `credentials` or `headers`
-      */
-      credentials: 'include',
-      fetch: enhancedFetch,
-    }),
+    link: from([errorLink, httpLink]),
     cache: new InMemoryCache({
       typePolicies: {
         /*
@@ -61,10 +88,10 @@ function createApolloClient(headers: IncomingHttpHeaders | null = null) {
               // handle cache for query `posts` field
               keyArgs: false,
               merge(existing, incoming) {
-                // console.log('Cache posts InMemoryCache', {
-                //   existing,
-                //   incoming,
-                // });
+                console.log('Cache posts InMemoryCache', {
+                  existing,
+                  incoming,
+                });
 
                 let paginatedPosts: Post[] = [];
 
