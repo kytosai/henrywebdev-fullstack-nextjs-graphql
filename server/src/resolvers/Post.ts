@@ -42,8 +42,12 @@ class PostResolver {
   }
 
   @FieldResolver(() => User)
-  async user(@Root() root: Post) {
-    return await User.findOne({ where: [{ id: root.userId }] });
+  async user(@Root() root: Post, @Ctx() context: Context) {
+    const {
+      dataLoaders: { userLoader },
+    } = context;
+
+    return await userLoader.load(root.userId);
   }
 
   @FieldResolver(() => Int)

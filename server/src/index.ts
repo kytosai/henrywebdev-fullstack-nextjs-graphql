@@ -17,6 +17,7 @@ import HelloResolver from './resolvers/Hello';
 import PostResolver from './resolvers/Post';
 import UserResolver from './resolvers/User';
 import Context from './types/Context';
+import { buildDataLoaders } from './utils/dataLoader';
 
 dotenv.config();
 
@@ -36,7 +37,7 @@ const main = async () => {
     database: process.env.DB_NAME,
     username: process.env.DB_USERNAME_DEV,
     password: process.env.DB_PASSWORD_DEV,
-    logging: false, // for debug
+    logging: true, // for debug
     synchronize: true, // ! only use for development, auto create table
     entities: [User, Post, Upvote],
   });
@@ -88,6 +89,7 @@ const main = async () => {
         req,
         res,
         connection,
+        dataLoaders: buildDataLoaders(),
       };
     },
 
