@@ -252,6 +252,8 @@ class PostResolver {
         };
       }
 
+      await Upvote.delete({ postId: id }); // fix for error when user delete post have upvote item in db
+
       await Post.delete(id);
 
       return {
