@@ -60,8 +60,6 @@ const LoginPage = () => {
 
         const apolloClient = initializeApollo();
         apolloClient.resetStore();
-
-        router.push('/');
       }
     } catch (error) {
       console.log(error);
