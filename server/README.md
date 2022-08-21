@@ -6,3 +6,7 @@
   - issue: https://github.com/MichalLytek/type-graphql/issues/1100
 - In graphql landing page. Please setting `"request.credentials": "include",` for allow save cookie from login
   - issue: https://stackoverflow.com/a/68164992
+
+## Setup
+
+- [important] You must create empty database postgres named `reddit` before start coding
