@@ -1,6 +1,8 @@
 # Client Nextjs 
 
 - Example repo apollo with nextjs: https://github.com/vercel/next.js/tree/canary/examples/with-apollo
+- Docs:
+  - Setup nextjs with apollo ssr cookies and typescript: https://www.rockyourcode.com/nextjs-with-apollo-ssr-cookies-and-typescript/ 
 
 ## FAQs
 

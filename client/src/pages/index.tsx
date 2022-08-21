@@ -5,13 +5,18 @@ import { PostsDocument, usePostsQuery } from '@/generated/graphql';
 import { addApolloState, initializeApollo } from '@/lib/apolloClient';
 import { NetworkStatus } from '@apollo/client';
 import { Box, Button, Flex, Heading, Link, Spinner, Stack, Text } from '@chakra-ui/react';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import NextLink from 'next/link';
 
 const limit = 2;
 
-export const getStaticProps: GetStaticProps = async () => {
-  const apolloClient = initializeApollo();
+export const getServerSideProps: GetServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
+  const headers = context.req.headers;
+  const apolloClient = initializeApollo({
+    headers,
+  });
 
   await apolloClient.query({
     query: PostsDocument,
