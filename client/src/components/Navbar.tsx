@@ -42,6 +42,8 @@ const Navbar = () => {
                   },
                 });
               });
+
+              return existing;
             },
           },
         });
