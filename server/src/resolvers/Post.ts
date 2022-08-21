@@ -52,18 +52,17 @@ class PostResolver {
 
   @FieldResolver(() => Int)
   async voteType(@Root() root: Post, @Ctx() context: Context) {
-    const { req } = context;
+    const {
+      req,
+      dataLoaders: { voteTypeLoader },
+    } = context;
     const userId = req.session.userId;
 
     if (!userId) return 0;
 
-    const existingVote = await Upvote.findOne({
-      where: [
-        {
-          postId: root.id,
-          userId: req.session.userId,
-        },
-      ],
+    const existingVote = await voteTypeLoader.load({
+      postId: root.id,
+      userId,
     });
 
     if (!existingVote) return 0;
