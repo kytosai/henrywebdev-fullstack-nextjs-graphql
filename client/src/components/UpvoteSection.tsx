@@ -1,6 +1,7 @@
 import { PostWithUserInfoFragment, useVoteMutation, VoteType } from '@/generated/graphql';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import { Box, Flex, IconButton } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 interface UpvoteSectionProps {
@@ -14,35 +15,45 @@ enum VoteTypeValues {
 
 const UpvoteSection = (props: UpvoteSectionProps) => {
   const { post } = props;
+  const router = useRouter();
+
   const [loadingState, setLoadingState] = useState<
     'upvote-loading' | 'downvote-loading' | 'not-loading'
   >('not-loading');
   const [vote, { loading }] = useVoteMutation();
 
   const handleUpvote = async () => {
-    setLoadingState('upvote-loading');
+    try {
+      setLoadingState('upvote-loading');
 
-    await vote({
-      variables: {
-        postId: parseInt(post.id),
-        inputVoteValue: VoteType.Upvote,
-      },
-    });
+      await vote({
+        variables: {
+          postId: parseInt(post.id),
+          inputVoteValue: VoteType.Upvote,
+        },
+      });
 
-    setLoadingState('not-loading');
+      setLoadingState('not-loading');
+    } catch (error) {
+      router.push('/login');
+    }
   };
 
   const handleDownvote = async () => {
-    setLoadingState('downvote-loading');
+    try {
+      setLoadingState('downvote-loading');
 
-    await vote({
-      variables: {
-        postId: parseInt(post.id),
-        inputVoteValue: VoteType.Downvote,
-      },
-    });
+      await vote({
+        variables: {
+          postId: parseInt(post.id),
+          inputVoteValue: VoteType.Downvote,
+        },
+      });
 
-    setLoadingState('not-loading');
+      setLoadingState('not-loading');
+    } catch (error) {
+      router.push('/login');
+    }
   };
 
   return (
