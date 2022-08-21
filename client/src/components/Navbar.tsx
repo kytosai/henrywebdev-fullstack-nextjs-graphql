@@ -1,4 +1,12 @@
-import { MeDocument, MeQuery, useLogoutMutation, useMeQuery } from '@/generated/graphql';
+import {
+  MeDocument,
+  MeQuery,
+  PostWithUserInfoFragment,
+  useLogoutMutation,
+  useMeQuery,
+} from '@/generated/graphql';
+import { initializeApollo } from '@/lib/apolloClient';
+import { gql, Reference } from '@apollo/client';
 import { Box, Button, Flex, Heading, Link } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
@@ -10,10 +18,31 @@ const Navbar = () => {
     await logout({
       update(cache, { data }) {
         if (!data?.logout) return;
+
         cache.writeQuery<MeQuery>({
           query: MeDocument,
           data: {
             me: null,
+          },
+        });
+
+        cache.modify({
+          fields: {
+            posts(existing) {
+              existing.paginatedPosts.forEach((post: Reference) => {
+                cache.writeFragment({
+                  id: post.__ref,
+                  fragment: gql`
+                    fragment VoteType on Post {
+                      voteType
+                    }
+                  `,
+                  data: {
+                    voteType: 0,
+                  },
+                });
+              });
+            },
           },
         });
       },

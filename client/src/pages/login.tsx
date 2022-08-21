@@ -7,6 +7,7 @@ import { Alert, Box, Button, Flex, Link, Spinner, useToast } from '@chakra-ui/re
 import { Form, Formik, FormikHelpers } from 'formik';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
+import { initializeApollo } from '@/lib/apolloClient';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -56,6 +57,9 @@ const LoginPage = () => {
           isClosable: true,
           position: 'top',
         });
+
+        const apolloClient = initializeApollo();
+        apolloClient.resetStore();
 
         router.push('/');
       }
